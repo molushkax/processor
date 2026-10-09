@@ -9,9 +9,15 @@
 enum number_of_needed_cells { ONE_CELL = 1, TWO_CELLS = 2 };
 enum commands { HLT = 0, PUSH, ADD, SUB, MUL, DIV, OUT, IN };
 
+struct processor_t {
+    stack_t stk;
+    int     number_of_int_for_buf;
+    int*    buffer_with_commands;
+};
+
 int  count_ints_in_file               (const char* code_lst);
-void create_buffer_with_commands      (int* buffer_with_commands, int number_of_int_for_buf, const char* code_lst);
-stack_elem_t  do_commands_from_buffer (int* buffer_with_commands, int number_of_int_for_buf);
+void create_buffer_with_commands      (processor_t* processor, const char* code_lst);
+stack_elem_t  do_commands_from_buffer (processor_t* processor);
 stack_elem_t pop_value                (stack_t* stk);
 
 void push_command (stack_t* stk, int* buffer_with_commands, int* i);
@@ -22,24 +28,25 @@ void div_command  (stack_t* stk, int* i);
 void out_command  (stack_t* stk, int* i, stack_elem_t* answer);
 
 int main () {
+    processor_t processor = {};
     const char* code_lst = "code.lst";
 
-    int number_of_int_for_buf = count_ints_in_file (code_lst);
-    if (number_of_int_for_buf <= 0) {
+    processor.number_of_int_for_buf = count_ints_in_file (code_lst);
+    if (processor.number_of_int_for_buf <= 0) {
         fprintf (stderr, "empty or missing %s\n", code_lst);
         return 1;
     }
-    printf ("%d int elements\n", number_of_int_for_buf);
+    printf ("%d int elements\n", processor.number_of_int_for_buf);
 
-    int* buffer_with_commands = (int*)calloc (number_of_int_for_buf, sizeof(int));
+    processor.buffer_with_commands = (int*)calloc (processor.number_of_int_for_buf, sizeof(int)); //TODO с проверкой
 
-    create_buffer_with_commands (buffer_with_commands, number_of_int_for_buf, code_lst);
+    create_buffer_with_commands (&processor, code_lst);
 
-    stack_elem_t answer = do_commands_from_buffer (buffer_with_commands, number_of_int_for_buf);
+    stack_elem_t answer = do_commands_from_buffer (&processor);
 
     printf ("answer: " SP "\n", answer);
 
-    free (buffer_with_commands);
+    free (processor.buffer_with_commands);
     return 0;
 }
 
@@ -58,8 +65,8 @@ int count_ints_in_file (const char* code_lst) {
     return counter;
 }
 
-void create_buffer_with_commands (int* buffer_with_commands, int number_of_int_for_buf, const char* code_lst) {
-    assert (buffer_with_commands != NULL);
+void create_buffer_with_commands (processor_t* processor, const char* code_lst) {
+    assert (processor != NULL);
 
     FILE* f = fopen (code_lst, "r");
     if (f == NULL) {
@@ -70,43 +77,43 @@ void create_buffer_with_commands (int* buffer_with_commands, int number_of_int_f
     size_t i = 0;
     int x = 0;
 
-    while (fscanf (f, "%d", &x) == 1 && i < (size_t)number_of_int_for_buf) {
-        buffer_with_commands[i] = x;
+    while (fscanf (f, "%d", &x) == 1 && i < (size_t)(processor->number_of_int_for_buf)) {
+        (processor->buffer_with_commands)[i] = x;
         i++;
     }
 
     fclose (f);
 }
 
-stack_elem_t do_commands_from_buffer (int* buffer_with_commands, int number_of_int_for_buf) {
-    assert (buffer_with_commands != NULL);
+stack_elem_t do_commands_from_buffer (processor_t* processor) {
+    assert (processor != NULL);
 
-    stack_t stk = {};
-    stk.capacity = 5;
-    stack_init (&stk);
+    processor->stk = {};
+    (processor->stk).capacity = 5;
+    stack_init (&(processor->stk));
 
     int i = 0;
     stack_elem_t answer = 0;
 
-    while (i < number_of_int_for_buf) {
+    while (i < processor->number_of_int_for_buf) {
 
-        switch (buffer_with_commands[i]) {
-            case PUSH: push_command (&stk, buffer_with_commands, &i);
+        switch ((processor->buffer_with_commands)[i]) {
+            case PUSH: push_command (&(processor->stk), processor->buffer_with_commands, &i);
                 break;
 
-            case ADD:  add_command (&stk, &i);
+            case ADD:  add_command (&(processor->stk), &i);
                 break;
 
-            case SUB:  sub_command (&stk, &i);
+            case SUB:  sub_command (&(processor->stk), &i);
                 break;
 
-            case MUL:  mul_command (&stk, &i);
+            case MUL:  mul_command (&(processor->stk), &i);
                 break;
 
-            case DIV:  div_command (&stk, &i);
+            case DIV:  div_command (&(processor->stk), &i);
                 break;
 
-            case OUT:  out_command (&stk, &i, &answer);
+            case OUT:  out_command (&(processor->stk), &i, &answer);
                 break;
 
             case HLT:

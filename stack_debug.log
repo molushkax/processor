@@ -16760,3 +16760,1262 @@ struct stack_t {
 }
 ========================================
 
+[23:46:51.681721] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+        [-1] canary: <1.25078e+07> (ALIVE)
+        [0] element: <4489> POISON
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           0
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x48262AA4 (stored 0x48262AA4) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.682556] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <20>
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           1
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x28CE929F (stored 0x28CE929F) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.683184] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <20>
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           1
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x28CE929F (stored 0x28CE929F) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.683597] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <20>
+       *[1] element: <30>
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           2
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x0FB529E4 (stored 0x0FB529E4) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.684144] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <20>
+       *[1] element: <30>
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           2
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x0FB529E4 (stored 0x0FB529E4) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.684377] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <20>
+       *[1] element: <30>
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           2
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x0FB529E4 (stored 0x0FB529E4) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.684548] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <20>
+       *[1] element: <30>
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           2
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x0FB529E4 (stored 0x0FB529E4) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.685023] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <20>
+       *[1] element: <30>
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           2
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x0FB529E4 (stored 0x0FB529E4) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.685330] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <20>
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           1
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x28CE929F (stored 0x28CE929F) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.685621] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <20>
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           1
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x28CE929F (stored 0x28CE929F) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.685917] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <20>
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           1
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x28CE929F (stored 0x28CE929F) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.686245] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <20>
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           1
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x28CE929F (stored 0x28CE929F) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.686805] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <20>
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           1
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x28CE929F (stored 0x28CE929F) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.687182] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+        [-1] canary: <1.25078e+07> (ALIVE)
+        [0] element: <4489> POISON
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           0
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x48262AA4 (stored 0x48262AA4) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.687477] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+        [-1] canary: <1.25078e+07> (ALIVE)
+        [0] element: <4489> POISON
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           0
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x48262AA4 (stored 0x48262AA4) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.687779] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           1
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x2FF60E54 (stored 0x2FF60E54) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.688102] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           1
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x2FF60E54 (stored 0x2FF60E54) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.688320] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+       *[1] element: <8>
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           2
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x8134A9BB (stored 0x8134A9BB) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.688827] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+       *[1] element: <8>
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           2
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x8134A9BB (stored 0x8134A9BB) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.689191] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+       *[1] element: <8>
+       *[2] element: <6>
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           3
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x5AA2861A (stored 0x5AA2861A) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.689520] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+       *[1] element: <8>
+       *[2] element: <6>
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           3
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x5AA2861A (stored 0x5AA2861A) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.689857] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+       *[1] element: <8>
+       *[2] element: <6>
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           3
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x5AA2861A (stored 0x5AA2861A) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.690195] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+       *[1] element: <8>
+       *[2] element: <6>
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           3
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x5AA2861A (stored 0x5AA2861A) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.690671] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+       *[1] element: <8>
+       *[2] element: <6>
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           3
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x5AA2861A (stored 0x5AA2861A) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.691018] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+       *[1] element: <8>
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           2
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x8134A9BB (stored 0x8134A9BB) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.691383] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+       *[1] element: <8>
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           2
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x8134A9BB (stored 0x8134A9BB) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.691786] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+       *[1] element: <8>
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           2
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x8134A9BB (stored 0x8134A9BB) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.692231] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+       *[1] element: <8>
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           2
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x8134A9BB (stored 0x8134A9BB) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.692633] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+       *[1] element: <8>
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           2
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x8134A9BB (stored 0x8134A9BB) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.692989] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           1
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x2FF60E54 (stored 0x2FF60E54) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.693332] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           1
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x2FF60E54 (stored 0x2FF60E54) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.693552] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+       *[1] element: <2>
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           2
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x7B2C259B (stored 0x7B2C259B) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.694026] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+       *[1] element: <2>
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           2
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x7B2C259B (stored 0x7B2C259B) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.694500] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+       *[1] element: <2>
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           2
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x7B2C259B (stored 0x7B2C259B) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.694886] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+       *[1] element: <2>
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           2
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x7B2C259B (stored 0x7B2C259B) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.695288] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+       *[1] element: <2>
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           2
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x7B2C259B (stored 0x7B2C259B) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.695762] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           1
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x2FF60E54 (stored 0x2FF60E54) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.696088] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           1
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x2FF60E54 (stored 0x2FF60E54) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.696519] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           1
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x2FF60E54 (stored 0x2FF60E54) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.697079] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           1
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x2FF60E54 (stored 0x2FF60E54) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.697447] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <50>
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           1
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x2FF60E54 (stored 0x2FF60E54) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.697806] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+        [-1] canary: <1.25078e+07> (ALIVE)
+        [0] element: <4489> POISON
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           0
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x48262AA4 (stored 0x48262AA4) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.698103] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+        [-1] canary: <1.25078e+07> (ALIVE)
+        [0] element: <4489> POISON
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           0
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x48262AA4 (stored 0x48262AA4) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.698398] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <25>
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           1
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x8C08BC44 (stored 0x8C08BC44) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.698833] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <25>
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           1
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x8C08BC44 (stored 0x8C08BC44) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.699147] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  stack_verify_func
+Line:      171
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <25>
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           1
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x8C08BC44 (stored 0x8C08BC44) (HASH IS VALID)
+}
+========================================
+
+[23:46:51.699564] =========== STACK DEBUG DUMP ===========
+File:      stack.cpp
+Function:  out_command
+Line:      199
+Struct:    stack_t at [00000090739ffa00]
+
+struct stack_t {
+    struct address: 00000090739ffa00
+    data address:   0000009073aa14b8
+
+    data in data:
+        [-1] canary: <1.25078e+07> (ALIVE)
+       *[0] element: <25>
+        [1] element: <4489> POISON
+        [2] element: <4489> POISON
+        [3] element: <4489> POISON
+        [4] element: <4489> POISON
+        [5] canary:  <2.00125e+08> (ALIVE)
+
+    size:           1
+    capacity:       5
+    canary left:    0xBEDABEDA  (ALIVE)
+    canary right:   0xBEDABEDAA (ALIVE)
+    hash:           0x8C08BC44 (stored 0x8C08BC44) (HASH IS VALID)
+}
+========================================
+
