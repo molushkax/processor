@@ -6,4 +6,4 @@ PUSH 6
 SUB
 DIV
 OUT
-HTL
+HLT
