@@ -14,6 +14,13 @@ void create_buffer_with_commands      (int* buffer_with_commands, int number_of_
 stack_elem_t  do_commands_from_buffer (int* buffer_with_commands, int number_of_int_for_buf);
 stack_elem_t pop_value                (stack_t* stk);
 
+void push_command (stack_t* stk, int* buffer_with_commands, int* i);
+void add_command  (stack_t* stk, int* i);
+void sub_command  (stack_t* stk, int* i);
+void mul_command  (stack_t* stk, int* i);
+void div_command  (stack_t* stk, int* i);
+void out_command  (stack_t* stk, int* i, stack_elem_t* answer);
+
 int main () {
     const char* code_lst = "code.lst";
 
@@ -84,63 +91,29 @@ stack_elem_t do_commands_from_buffer (int* buffer_with_commands, int number_of_i
     while (i < number_of_int_for_buf) {
 
         switch (buffer_with_commands[i]) {
-            case PUSH: {
-                PUSH_AND_CHECK(&stk, buffer_with_commands[i + 1]);
-                i += 2;
+            case PUSH: push_command (&stk, buffer_with_commands, &i);
                 break;
-            }
 
-            case ADD: {
-                stack_elem_t value1 = pop_value (&stk);
-                stack_elem_t value2 = pop_value (&stk);
-                stack_elem_t result = value2 + value1;
-                PUSH_AND_CHECK (&stk, result);
-                i += 1;
+            case ADD:  add_command (&stk, &i);
                 break;
-            }
 
-            case SUB: {
-                stack_elem_t value1 = pop_value (&stk);
-                stack_elem_t value2 = pop_value (&stk);
-                stack_elem_t result = value2 - value1;
-                PUSH_AND_CHECK (&stk, result);
-                i += 1;
+            case SUB:  sub_command (&stk, &i);
                 break;
-            }
 
-            case MUL: {
-                stack_elem_t value1 = pop_value (&stk);
-                stack_elem_t value2 = pop_value (&stk);
-                stack_elem_t result = value2 * value1;
-                PUSH_AND_CHECK (&stk, result);
-                i += 1;
+            case MUL:  mul_command (&stk, &i);
                 break;
-            }
 
-            case DIV: {
-                stack_elem_t value1 = pop_value (&stk);
-                stack_elem_t value2 = pop_value (&stk);
-                stack_elem_t result = value2 / value1;
-                PUSH_AND_CHECK (&stk, result);
-                i += 1;
+            case DIV:  div_command (&stk, &i);
                 break;
-            }
 
-            case OUT: {
-                answer = stack_top (&stk);
-                STACK_DUMP (&stk);
-                i++;
+            case OUT:  out_command (&stk, &i, &answer);
                 break;
-            }
 
-            case HLT: {
+            case HLT:
                 return answer;
-            }
 
-            default: {
-                fprintf (stderr, "Unknown command\n");
+            default: fprintf (stderr, "Unknown command\n");
                 return -1;
-            }
         }
     }
 
@@ -153,4 +126,69 @@ stack_elem_t pop_value(stack_t* stk) {
     stack_elem_t val = stack_top(stk);
     POP_AND_CHECK(stk);
     return val;
+}
+
+void push_command (stack_t* stk, int* buffer_with_commands, int* i) {
+    assert (stk != NULL);
+    assert (i != NULL);
+
+    PUSH_AND_CHECK(stk, buffer_with_commands[*i + 1]);
+    *i += 2;
+}
+
+void add_command (stack_t* stk, int* i) {
+    assert (stk != NULL);
+    assert (i != NULL);
+
+    stack_elem_t value1 = pop_value (stk);
+    stack_elem_t value2 = pop_value (stk);
+    stack_elem_t result = value2 + value1;
+
+    PUSH_AND_CHECK (stk, result);
+    *i += 1;
+}
+
+void sub_command (stack_t* stk, int* i) {
+    assert (stk != NULL);
+    assert (i != NULL);
+
+    stack_elem_t value1 = pop_value (stk);
+    stack_elem_t value2 = pop_value (stk);
+    stack_elem_t result = value2 - value1;
+
+    PUSH_AND_CHECK (stk, result);
+    *i += 1;
+}
+
+void mul_command (stack_t* stk, int* i) {
+    assert (stk != NULL);
+    assert (i != NULL);
+
+    stack_elem_t value1 = pop_value (stk);
+    stack_elem_t value2 = pop_value (stk);
+    stack_elem_t result = value2 * value1;
+
+    PUSH_AND_CHECK (stk, result);
+    *i += 1;
+}
+
+void div_command (stack_t* stk, int* i) {
+    assert (stk != NULL);
+    assert (i != NULL);
+
+    stack_elem_t value1 = pop_value (stk);
+    stack_elem_t value2 = pop_value (stk);
+    stack_elem_t result = value2 / value1;
+
+    PUSH_AND_CHECK (stk, result);
+    *i += 1;
+}
+
+void out_command (stack_t* stk, int* i, stack_elem_t* answer) {
+    assert (stk != NULL);
+    assert (i != NULL);
+
+    *answer = stack_top (stk);
+    STACK_DUMP (stk);
+    *i += 1;
 }
