@@ -16,7 +16,7 @@ int main() {
         return 1;
     }
 
-    FILE* code_asm = fopen("code.asm", "r");
+    FILE* code_asm = fopen("code_interp.asm", "r");
     if (code_asm == NULL) {
         printf("Cannot open file code.asm\n");
         return 1;

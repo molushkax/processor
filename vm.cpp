@@ -1,13 +1,10 @@
-#include "stack.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
-
-enum number_of_needed_cells { ONE_CELL = 1, TWO_CELLS = 2 };
-enum commands { HLT = 0, PUSH, ADD, SUB, MUL, DIV, OUT, IN };
+#include "stack.h"
+#include "commands.h"
 
 struct processor_t {
     stack_t stk;
