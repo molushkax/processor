@@ -560,4 +560,3 @@ void stack_update_hash (stack_t* stk) {
 
     stk->hash = dgb2_hash (stk);
 }
-

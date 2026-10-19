@@ -7,6 +7,7 @@ int main () {
     const char* code_lst = "code.lst";
 
     info_for_compile compile_info = {};
+    compile_info.labels = (int*)calloc (MAX_NUMBERS_OF_LABELS, sizeof (int));
 
     read_commands_from_file (&compile_info, code_asm, __FUNCTION__);
     write_pointers_to_strings_in_index (&compile_info, __FUNCTION__);
@@ -203,60 +204,183 @@ int read_words (FILE* code_lst, info_for_compile* compile_info) {
     assert (compile_info != NULL);
     assert (compile_info->index != NULL);
 
-    size_t number_of_codes  = sizeof (code_of_commands) / sizeof (code_of_commands[0]);
-    int    final_number_of_int = 0;
-
-    printf ("number of codes: %zu\n\n", number_of_codes);
-
+    // ---------- первый проход: только метки ----------
+    compile_info->instruction_pointer = 0;
     for (size_t line = 0; line < compile_info->number_of_strings; line++) {
+        process_line (NULL, compile_info, line, /*pass=*/1);
+    }
 
-        const char* start  = compile_info->index[line].start_ptr;
-        size_t      length = compile_info->index[line].length;
+    // ---------- второй проход: генерация кода ----------
+    compile_info->instruction_pointer = 0;
+    for (size_t line = 0; line < compile_info->number_of_strings; line++) {
+        int result = process_line (code_lst, compile_info, line, /*pass=*/2);
+        if (result < 0) return -1;
+    }
 
-        if (start == NULL || start[0] == '\0') {
-            continue;
+    return compile_info->instruction_pointer;
+}
+
+int process_line (FILE* code_lst, info_for_compile* compile_info, size_t line, int pass) {
+    assert (compile_info != NULL);
+    assert (compile_info->index != NULL);
+
+    const char* start  = compile_info->index[line].start_ptr;
+    size_t      length = compile_info->index[line].length;
+
+    if (start == NULL || start[0] == '\0') {
+        return 0;
+    }
+
+    size_t i = 0;
+    int j = 0;
+    char word[16] = {};
+
+    //--------- обработка меток --------
+    if (start[0] == ':') {
+        i++;
+        char label_number = start[i];//TODO
+        if (pass == 1) {
+            (compile_info->labels)[label_number - '0'] = compile_info->instruction_pointer;
+            printf ("{pass 1} label :%c -> ip %d\n", label_number, compile_info->instruction_pointer);
         }
 
-        int i = 0;
-        int j = 0;
-        char word[16] = {};
+        return 0;
+    }
 
-        while (i < (int)length && isalpha((unsigned char)start[i])) {
-            word[j] = start[i];
+    // ---------- имя команды ----------
+    while (i < length && isalpha((unsigned char)start[i])) {
+        word[j] = start[i];
+        i++;
+        j++;
+    }
+
+    word[j] = '\0';
+
+    // ---------- поиск команды ----------
+    size_t k = 0;
+    size_t number_of_codes  = sizeof (code_of_commands) / sizeof (code_of_commands[0]);
+    bool   found = false;
+    int    command_code = -1;
+    const char* command_name = NULL;
+
+    for (k = 0; k < number_of_codes; k++) {
+        if (strcmp(word, code_of_commands[k].name_command_assembler) == 0) {
+            command_code = code_of_commands[k].code_of_command;
+            command_name = code_of_commands[k].name_command_assembler;
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        if (pass == 2) {
+            printf ("You write in code_asm something else\nI finish my attempt\n");
+            return -1;
+        }
+
+        return 0;
+    }
+
+    // ---------- команда без аргумента ----------
+    if (length <= 4) {
+        if (pass == 2) fprintf (code_lst, "%d\n", command_code);
+        compile_info->instruction_pointer++;
+
+        return 0;
+    }
+
+    // ---------- пропускаем пробелы ----------
+    while (i < length && start[i] == ' ') {
+        i++;
+    }
+
+    // ---------- если аргумент - регистр ----------
+    if (isalpha((unsigned char)start[i])) {
+        int r = 0;
+        char reg_word[10] = {};
+        while (i < length && isalpha((unsigned char)start[i])) {
+            reg_word[r] = start[i];
             i++;
-            j++;
+            r++;
         }
-        word[j] = '\0';
+        reg_word[r] = '\0';
 
-        size_t k = 0;
-        bool   found = false;
+        size_t num_of_regs = sizeof (array_of_registers) / sizeof (array_of_registers[0]);
+        bool reg_found = false;
+        int  reg_num   = -1;
 
-        for (k = 0; k < number_of_codes; k++) {
-            if (strcmp(word, code_of_commands[k].name_command_assembler) == 0) {
-                fprintf (code_lst, "%d", code_of_commands[k].code_of_command);
-                final_number_of_int++;
-                found = true;
+        for (size_t q = 0; q < num_of_regs; q++) {
+            if (strcmp(reg_word, array_of_registers[q].name_of_register) == 0) {
+                reg_num   = array_of_registers[q].num_among_registers;
+                reg_found = true;
                 break;
             }
         }
 
-        if (!found) {
-            printf ("You write in code_asm something else\nI finish your attempt\n");
+        if (!reg_found) {
+            if (pass == 2) {
+                printf ("Unknown register: %s\n", reg_word);
+                return -1;
+            }
+
+            return 0;
+        }
+
+        int reg_command_code = 0;
+        if (strcmp(command_name, "PUSH") == 0)      reg_command_code = PUSHR; // 9
+        else if (strcmp(command_name, "POP") == 0)  reg_command_code = POP;   // 8
+        else {
+            if (pass == 2) {
+                printf ("Command %s doesn't support register argument\n", command_name);
+                return -1;
+            }
+
+            return 0;
+        }
+
+        if (pass == 2) fprintf (code_lst, "%d %d\n", reg_command_code, reg_num);
+        compile_info->instruction_pointer += 2;
+    }
+    // ---------- если аргумент - число ----------
+    else if (isdigit((unsigned char)start[i])) {
+        if (strcmp(command_name, "POP") == 0) {
+            printf ("POP requires a register, not a number\n");
             return -1;
         }
 
-        if (length <= 4) {
-            fprintf (code_lst, "\n");
-            continue;
-        }
-
-        while (i < (int)length && (start[i] == ' ' || isdigit((unsigned char)start[i]))) {
-            fprintf (code_lst, "%c", start[i]);
+        char num_word[10] = {};
+        int  n = 0;
+        while (i < length && isdigit((unsigned char)start[i])) {
+            num_word[n] = start[i];
             i++;
+            n++;
         }
+        num_word[n] = '\0';
 
-        fprintf (code_lst, "\n");
+        if (pass == 2) fprintf (code_lst, "%d %s\n", command_code, num_word);
+        compile_info->instruction_pointer += 2;
     }
 
-    return final_number_of_int;
+    else if (start[i] == ':') {
+        i++;
+        int label_number = start[i] - '0';
+
+        if (pass == 2) fprintf (code_lst, "%d %d\n", command_code, (compile_info->labels)[label_number]);
+        compile_info->instruction_pointer += 2;
+    }
+
+    else if (start[i] == ';') {
+        return 0;
+    }
+
+    else {
+        printf ("Unknown argument after %s\n", command_name);
+        return -1;
+    }
+
+    /*for (int i = 0; i < MAX_NUMBERS_OF_LABELS; i++) {
+        fprintf (code_lst, "%d elem: %d\n", i, (compile_info->labels)[i]);
+    }*/
+
+    return compile_info->instruction_pointer;
 }

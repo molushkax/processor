@@ -12,6 +12,8 @@
 #include <string.h>
 #include <assert.h>
 
+#define MAX_NUMBERS_OF_LABELS 20
+
 struct string_info {
     char*  start_ptr;   // указатель на начало строки в общем буфере
     size_t length;      // длина строки (без '\0')
@@ -24,6 +26,8 @@ struct info_for_compile {
     char*  buffer;
     size_t number_of_strings;
     string_info* index;
+    int*   labels;
+    int    instruction_pointer;
 };
 
 struct error_map_2 {
@@ -42,6 +46,7 @@ void   print_custom_error                 (int error_code, const char* function_
 
 int    get_size_of_file                   (const char* code_txt, size_t* bytes_for_code_txt);
 int    read_words                         (FILE* code_lst, info_for_compile* compile_info);
+int    process_line                       (FILE* code_lst, info_for_compile* compile_info, size_t line, int pass);
 
 size_t read_commands_from_file            (info_for_compile* compile_info, const char* filename, const char* caller);
 size_t count_strings_in_buffer            (char* buffer);
