@@ -37,9 +37,9 @@ size_t read_commands_from_file (info_for_compile* compile_info, const char* file
     check_of_memory_allocation (compile_info->buffer, caller);
 
     compile_info->number_of_read_info = read_file (compile_info->file_code_asm,
-                                            &(compile_info->buffer),
-                                            (int)(compile_info->bytes_for_code_lst),
-                                            caller);
+                                                   &(compile_info->buffer),
+                                                   (int)(compile_info->bytes_for_code_lst),
+                                                   caller);
     compile_info->buffer[compile_info->number_of_read_info] = '\0';
     compile_info->number_of_strings = count_strings_in_buffer (compile_info->buffer);
 
@@ -238,10 +238,28 @@ int process_line (FILE* code_lst, info_for_compile* compile_info, size_t line, i
     //--------- обработка меток --------
     if (start[0] == ':') {
         i++;
-        char label_number = start[i];//TODO
+
+        int label_number = 0;
+        bool has_digits = false;
+        while (i < length && isdigit((unsigned char)start[i])) {
+            label_number = label_number * 10 + (start[i] - '0');
+            i++;
+            has_digits = true;
+        }
+
+        if (!has_digits) {
+            printf ("Label without number: %s\n", start);
+            return -1;
+        }
+
+        if (label_number < 0 || label_number >= MAX_NUMBERS_OF_LABELS) {
+            printf ("Label number %d out of range [0, %d)\n", label_number, MAX_NUMBERS_OF_LABELS);
+            return -1;
+        }
+
         if (pass == 1) {
-            (compile_info->labels)[label_number - '0'] = compile_info->instruction_pointer;
-            printf ("{pass 1} label :%c -> ip %d\n", label_number, compile_info->instruction_pointer);
+            (compile_info->labels)[label_number] = compile_info->instruction_pointer;
+            printf ("{pass 1} label :%d -> ip %d\n", label_number, compile_info->instruction_pointer);
         }
 
         return 0;
@@ -369,9 +387,29 @@ int process_line (FILE* code_lst, info_for_compile* compile_info, size_t line, i
 
     else if (start[i] == ':') {
         i++;
-        int label_number = start[i] - '0';
 
-        if (pass == 2) fprintf (code_lst, "%d %d\n", command_code, (compile_info->labels)[label_number]);
+        int label_number = 0;
+        bool has_digits = false;
+
+        while (i < length && isdigit((unsigned char)start[i])) {
+            label_number = label_number * 10 + (start[i] - '0');
+            i++;
+            has_digits = true;
+        }
+
+        if (!has_digits) {
+            printf ("Label argument without number after %s\n", command_name);
+            return -1;
+        }
+
+        if (label_number < 0 || label_number >= MAX_NUMBERS_OF_LABELS) {
+            printf ("Label number %d out of range [0, %d)\n", label_number, MAX_NUMBERS_OF_LABELS);
+            return -1;
+        }
+
+        if (pass == 2) {
+            fprintf (code_lst, "%d %d\n", command_code, (compile_info->labels)[label_number]);
+        }
         compile_info->instruction_pointer += 2;
     }
 

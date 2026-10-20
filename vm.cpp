@@ -80,6 +80,8 @@ stack_elem_t do_commands_from_buffer (processor_t* processor) {
 
     while (processor->instruction_pointer < processor->number_of_int_for_buf) {
         int c = getchar ();
+        dump_buffer_with_commands (processor);
+        printf ("\ncommand number %d:\n\n", (processor->buffer_with_commands)[processor->instruction_pointer]);
 
         switch ((processor->buffer_with_commands)[processor->instruction_pointer]) {
             case PUSH: push_command (processor); break;
@@ -105,7 +107,6 @@ stack_elem_t do_commands_from_buffer (processor_t* processor) {
         }
 
         dump_stack (processor, __FUNCTION__, __LINE__);
-        //dump_buffer_with_commands (processor, __FUNCTION__, __LINE__);
     }
 
     return 0;
@@ -183,9 +184,9 @@ void div_command (processor_t* processor) {
     stack_elem_t value1 = pop_value (processor);
     stack_elem_t value2 = pop_value (processor);
     if (equal_double(value1, 0)) {
-        fprintf (stderr, "You're trying to do: " SP " : " SP "\nDIV by zero is not allowed.\n",
+        fprintf (stderr, "You're trying to do: " SP "/" SP " ??????\nDIV by zero is not allowed.\n",
                  value2, value1);
-        return;
+        abort();
     }
     stack_elem_t result = value2 / value1;//TODO
 
@@ -447,4 +448,27 @@ void print_data_elements_vm (const stack_elem_t* data, size_t capacity, size_t s
         if (right_canary_check == STACK_OK) printf ("(ALIVE)\n");
         else printf ("(NEED YOUR HELP, PROGRAMMER)\n");
     #endif
+}
+
+void dump_buffer_with_commands (processor_t* processor) {
+    assert (processor != NULL);
+
+    printf ("==================================================");
+    printf ("\nbuffer_with commands: (" GREEN_BACKGROUND "green" NO_COLOR " command is doing now) \n\n");
+
+    printf ("number of cell in buffer: ");
+    for (int i = 0; i < processor->number_of_int_for_buf; i++) {
+        if (i == processor->instruction_pointer) {
+            printf (GREEN_BACKGROUND "%3d" NO_COLOR, i);
+        }
+
+        else printf ("%3d", i);
+    }
+    printf ("\n");
+
+    printf ("value of cell in buffer:  ");
+    for (int i = 0; i < processor->number_of_int_for_buf; i++) {
+        printf ("%3d", (processor->buffer_with_commands)[i]);
+    }
+    printf ("\n");
 }

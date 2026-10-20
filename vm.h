@@ -32,3 +32,4 @@ void in_command   (processor_t* processor);
 void sqrt_command (processor_t* processor);
 void dump_stack (processor_t* processor, const char* func, int line);
 void print_data_elements_vm (const stack_elem_t* data, size_t capacity, size_t size);
+void dump_buffer_with_commands (processor_t* processor);

@@ -38,8 +38,6 @@ stackerr_t stack_push (stack_t* stk, stack_elem_t value) {
     return STACK_OK;
 }
 
-//TODO protect на валидность проверка
-
 void push_and_check_func (stack_t* stk, stack_elem_t value) {
     assert (stk != NULL);
 
@@ -232,7 +230,7 @@ int stack_verify_func (const stack_t* stk, const char* func, int line) {
         n++;
     }
 
-    if (!equal_double(stk->data[-1], DATA_CANARY_VALUE1)) { //TODO ==
+    if (!equal_double(stk->data[-1], DATA_CANARY_VALUE1)) {
         if (strstr (func, "test_stack") == NULL) {
             PRINT_CANARY_ERROR ("left data canary",
                                 (unsigned long long)DATA_CANARY_VALUE1,
