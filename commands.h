@@ -34,8 +34,8 @@ const struct comp_ass code_of_commands[] {
 struct register_ini
 {
     char name_of_register[10];
-    stack_elem_t  value_of_reg;
-    int  num_among_registers;
+    stack_elem_t value_of_reg;
+    int num_among_registers;
 };
 
 register_ini array_of_registers[] = {//TODO

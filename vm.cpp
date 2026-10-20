@@ -4,6 +4,7 @@
 
 int main () {
     processor_t processor = {};
+    //TODO processor.array_of_registers[];
     const char* code_lst = "code.lst";
 
     processor.number_of_int_for_buf = count_ints_in_file (code_lst);
@@ -11,8 +12,6 @@ int main () {
         fprintf (stderr, "empty or missing %s\n", code_lst);
         return 1;
     }
-
-    printf ("%d int elements\n", processor.number_of_int_for_buf);
 
     processor.buffer_with_commands = (int*)calloc (processor.number_of_int_for_buf, sizeof(int)); //TODO с проверкой
 
@@ -80,30 +79,34 @@ stack_elem_t do_commands_from_buffer (processor_t* processor) {
 
     while (processor->instruction_pointer < processor->number_of_int_for_buf) {
         int c = getchar ();
+
+        dump_registers (processor);
+        printf ("\nInstruction pointer: %d\n", processor->instruction_pointer);
         dump_buffer_with_commands (processor);
         printf ("\ncommand number %d:\n\n", (processor->buffer_with_commands)[processor->instruction_pointer]);
 
         switch ((processor->buffer_with_commands)[processor->instruction_pointer]) {
-            case PUSH: push_command (processor); break;
-            case POP:  pop_command  (processor); break;
-            case ADD:  add_command  (processor); break;
-            case SUB:  sub_command  (processor); break;
-            case MUL:  mul_command  (processor); break;
-            case DIV:  div_command  (processor); break;
-            case JMP:  jmp_command  (processor); break;
-            case JA:   ja_command   (processor); break;
-            case JAE:  jae_command  (processor); break;
-            case JB:   jb_command   (processor); break;
-            case JBE:  jbe_command  (processor); break;
-            case JE:   je_command   (processor); break;
-            case JNE:  jne_command  (processor); break;
-            case CALL: call_command (processor); break;
-            case RET:  ret_command  (processor); break;
-            case IN:   in_command   (processor); break;
-            case SQRT: sqrt_command (processor); break;
-            case OUT:  out_command  (processor, &answer); break;
-            case HLT:  return answer;
-            default:   fprintf (stderr, "Unknown command\n"); return -1;
+            case PUSH:  push_command  (processor); break;
+            case PUSHR: pushr_command (processor); break;
+            case POP:   pop_command   (processor); break;
+            case ADD:   add_command   (processor); break;
+            case SUB:   sub_command   (processor); break;
+            case MUL:   mul_command   (processor); break;
+            case DIV:   div_command   (processor); break;
+            case JMP:   jmp_command   (processor); break;
+            case JA:    ja_command    (processor); break;
+            case JAE:   jae_command   (processor); break;
+            case JB:    jb_command    (processor); break;
+            case JBE:   jbe_command   (processor); break;
+            case JE:    je_command    (processor); break;
+            case JNE:   jne_command   (processor); break;
+            case CALL:  call_command  (processor); break;
+            case RET:   ret_command   (processor); break;
+            case IN:    in_command    (processor); break;
+            case SQRT:  sqrt_command  (processor); break;
+            case OUT:   out_command   (processor, &answer); break;
+            case HLT:   return answer;
+            default:    fprintf (stderr, "Unknown command\n"); return -1;
         }
 
         dump_stack (processor, __FUNCTION__, __LINE__);
@@ -141,6 +144,16 @@ void pop_command (processor_t* processor) {
             break;
         }
     }
+
+    processor->instruction_pointer += 2;
+}
+
+void pushr_command (processor_t* processor) {
+    assert (processor != NULL);
+
+    int reg_num = (processor->buffer_with_commands)[processor->instruction_pointer + 1];
+
+    PUSH_AND_CHECK (&(processor->stk), (processor->array_of_registers)[reg_num - 1].value_of_reg);
 
     processor->instruction_pointer += 2;
 }
@@ -453,7 +466,6 @@ void print_data_elements_vm (const stack_elem_t* data, size_t capacity, size_t s
 void dump_buffer_with_commands (processor_t* processor) {
     assert (processor != NULL);
 
-    printf ("==================================================");
     printf ("\nbuffer_with commands: (" GREEN_BACKGROUND "green" NO_COLOR " command is doing now) \n\n");
 
     printf ("number of cell in buffer: ");
@@ -471,4 +483,18 @@ void dump_buffer_with_commands (processor_t* processor) {
         printf ("%3d", (processor->buffer_with_commands)[i]);
     }
     printf ("\n");
+}
+
+void dump_registers (processor_t* processor) {
+    assert (processor != NULL);
+
+    printf ("==================================================\n");
+    printf ("\narray_of_registers:\n");
+
+    size_t number_of_regs = 4;
+    for (size_t i = 0; i < number_of_regs; i++) {
+        printf ("   reg %s = " SP "\n",
+                array_of_registers[i].name_of_register,
+                (processor->array_of_registers)[i].value_of_reg);
+    }
 }

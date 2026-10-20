@@ -99,6 +99,19 @@ size_t fill_index_with_string_pointers (info_for_compile* compile_info) {
         (compile_info->index)[j - 1].length = (size_t)(&(compile_info->buffer)[compile_info->bytes_for_code_lst] - (compile_info->index)[j - 1].start_ptr);
     }
 
+    for (size_t k = 0; k < j; k++) {
+        char*  start = (compile_info->index)[k].start_ptr;
+        size_t len = (compile_info->index)[k].length;
+
+        for (size_t p = 0; p < len; p++) {
+            if (start[p] == ';') {
+                start[p] = '\0';
+                (compile_info->index)[k].length = p;
+                break;
+            }
+        }
+    }
+
     return j;
 }
 
@@ -274,19 +287,15 @@ int process_line (FILE* code_lst, info_for_compile* compile_info, size_t line, i
 
     word[j] = '\0';
 
+    if (j == 0) return 0;
+
     // ---------- поиск команды ----------
-    size_t k = 0;
     size_t number_of_codes  = sizeof (code_of_commands) / sizeof (code_of_commands[0]);
     bool   found = false;
     int    command_code = -1;
     const char* command_name = NULL;
 
-    if (start[i] == ';') {
-        found = true;
-        return 0;
-    }
-
-    for (k = 0; k < number_of_codes; k++) {
+    for (size_t k = 0; k < number_of_codes; k++) {
         if (strcmp(word, code_of_commands[k].name_command_assembler) == 0) {
             command_code = code_of_commands[k].code_of_command;
             command_name = code_of_commands[k].name_command_assembler;
@@ -305,17 +314,16 @@ int process_line (FILE* code_lst, info_for_compile* compile_info, size_t line, i
         return 0;
     }
 
-    // ---------- команда без аргумента ----------
-    if (length <= 4) {
-        if (pass == 2) fprintf (code_lst, "%d\n", command_code);
-        compile_info->instruction_pointer++;
-
-        return 0;
-    }
-
     // ---------- пропускаем пробелы ----------
     while (i < length && start[i] == ' ') {
         i++;
+    }
+
+    // ---------- нет аргумента ----------------
+    if (i > length || start[i] == '\0') {
+        if (pass == 2) fprintf (code_lst, "%d\n", command_code);
+        compile_info->instruction_pointer++;
+        return 0;
     }
 
     // ---------- если аргумент - регистр ----------
@@ -346,8 +354,6 @@ int process_line (FILE* code_lst, info_for_compile* compile_info, size_t line, i
                 printf ("Unknown register: %s\n", reg_word);
                 return -1;
             }
-
-            return 0;
         }
 
         int reg_command_code = 0;
@@ -358,8 +364,6 @@ int process_line (FILE* code_lst, info_for_compile* compile_info, size_t line, i
                 printf ("Command %s doesn't support register argument\n", command_name);
                 return -1;
             }
-
-            return 0;
         }
 
         if (pass == 2) fprintf (code_lst, "%d %d\n", reg_command_code, reg_num);
@@ -411,10 +415,6 @@ int process_line (FILE* code_lst, info_for_compile* compile_info, size_t line, i
             fprintf (code_lst, "%d %d\n", command_code, (compile_info->labels)[label_number]);
         }
         compile_info->instruction_pointer += 2;
-    }
-
-    else if (start[i] == ';') {
-        return 0;
     }
 
     else {
