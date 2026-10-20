@@ -1,8 +1,8 @@
 PUSH 2
-PUSH 2
-JE :2
+PUSH 0
+JE :1
 DIV
-:2
+:1
+DIV
 OUT
 HLT
-

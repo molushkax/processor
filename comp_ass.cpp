@@ -263,6 +263,11 @@ int process_line (FILE* code_lst, info_for_compile* compile_info, size_t line, i
     int    command_code = -1;
     const char* command_name = NULL;
 
+    if (start[i] == ';') {
+        found = true;
+        return 0;
+    }
+
     for (k = 0; k < number_of_codes; k++) {
         if (strcmp(word, code_of_commands[k].name_command_assembler) == 0) {
             command_code = code_of_commands[k].code_of_command;
@@ -271,6 +276,7 @@ int process_line (FILE* code_lst, info_for_compile* compile_info, size_t line, i
             break;
         }
     }
+
 
     if (!found) {
         if (pass == 2) {

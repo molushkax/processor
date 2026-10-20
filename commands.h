@@ -1,7 +1,7 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
-enum commands { HLT = 0, PUSH, ADD, SUB, MUL, DIV, OUT, IN, POP, PUSHR, JMP, CALL, JA, JAE, JB, JBE, JE, JNE };
+enum commands { HLT = 0, PUSH, ADD, SUB, MUL, DIV, OUT, IN, POP, PUSHR, JMP, CALL, JA, JAE, JB, JBE, JE, JNE, RET, SQRT };
 
 struct comp_ass {
     const char* name_command_assembler;
@@ -26,24 +26,28 @@ const struct comp_ass code_of_commands[] {
     { "JB",   14},
     { "JBE",  15},
     { "JE",   16},
-    { "JNE",  17}
+    { "JNE",  17},
+    { "RET",  18},
+    { "SQRT", 19}
 };
 
 struct register_ini
 {
     char name_of_register[10];
-    int  value_of_reg;
+    stack_elem_t  value_of_reg;
     int  num_among_registers;
 };
 
-register_ini array_of_registers[] = {
+register_ini array_of_registers[] = {//TODO
     {"AX", 0, 1},
     {"BX", 0, 2},
-    {"CX", 0, 3}
+    {"CX", 0, 3},
+    {"DX", 0, 4}
 };
 
 struct processor_t {
     stack_t stk;
+    stack_t call_stk;
     int     number_of_int_for_buf;
     int*    buffer_with_commands;
     int     instruction_pointer;
