@@ -45,8 +45,6 @@ const struct error_map_2 errors_2[] = {
 void   print_custom_error                 (int error_code, const char* function_name, int line);
 
 int    get_size_of_file                   (const char* code_txt, size_t* bytes_for_code_txt);
-int    read_words                         (FILE* code_lst, info_for_compile* compile_info);
-int    process_line                       (FILE* code_lst, info_for_compile* compile_info, size_t line, int pass);
 
 size_t read_commands_from_file            (info_for_compile* compile_info, const char* filename, const char* caller);
 size_t count_strings_in_buffer            (char* buffer);
@@ -61,4 +59,16 @@ int    check_of_memory_allocation_index   (string_info* index, const char* calle
 int    write_pointers_to_strings_in_index (info_for_compile* compile_info, const char* caller);
 int    free_text_and_index                (string_info* index, char* buffer, size_t bytes_for_onegin, size_t number_of_strings);
 
+int    read_words                         (FILE* code_lst, info_for_compile* compile_info);
+int    process_line                       (FILE* code_lst, info_for_compile* compile_info, size_t line, int pass);
+int    labels_processing                  (size_t* i, info_for_compile* compile_info, size_t line, const char* start, int pass);
+int    get_name_of_command                (size_t* i, int* j, info_for_compile* compile_info, size_t line, const char* start, char* word);
+int    search_of_command                  (int* command_code, const char** command_name, const char* word, int pass);
+int    commands_with_registers_processing (size_t* i, info_for_compile* compile_info, const char* start,
+                                           const char* command_name, size_t line, int pass, FILE* code_lst);
+int    commands_with_numbers_processing   (size_t* i, info_for_compile* compile_info, const char* start,
+                                           const char* command_name, int command_code, size_t line, int pass, FILE* code_lst);
+int    commands_with_labels_processing    (size_t* i, info_for_compile* compile_info, const char* start,
+                                           const char* command_name, int command_code, size_t line, int pass, FILE* code_lst);
+int    filter_codestyle                   (const char** start, size_t* length);
 #endif

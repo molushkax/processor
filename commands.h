@@ -1,6 +1,7 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
+#define QUANTITY_OF_REGS 4
 enum commands { HLT = 0, PUSH, ADD, SUB, MUL, DIV, OUT, IN, POP, PUSHR, JMP, CALL, JA, JAE, JB, JBE, JE, JNE, RET, SQRT };
 
 struct comp_ass {
@@ -51,7 +52,7 @@ struct processor_t {
     int     number_of_int_for_buf;
     int*    buffer_with_commands;
     int     instruction_pointer;
-    register_ini array_of_registers[];
+    register_ini array_of_registers[QUANTITY_OF_REGS];
 };
 
 #endif

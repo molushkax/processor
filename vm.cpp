@@ -2,9 +2,23 @@
 #include "commands.h"
 #include "vm.h"
 
+//TODO обработка комментариев норм
+//TODO ошибки
+//TODO метки именами
+//TODO disass
+//TODO size > 2 не ассерт а помягче для пользователя
+//TODO bytecode
+//TODO по функциям асс
+//TODO header struct
+//TODO enter
+//TODO reg raznie
+
 int main () {
     processor_t processor = {};
-    //TODO processor.array_of_registers[];
+
+    for (size_t i = 0; i < QUANTITY_OF_REGS; i++) {
+        processor.array_of_registers[i] = array_of_registers[i];
+    }
     const char* code_lst = "code.lst";
 
     processor.number_of_int_for_buf = count_ints_in_file (code_lst);
@@ -77,6 +91,8 @@ stack_elem_t do_commands_from_buffer (processor_t* processor) {
     processor->instruction_pointer = 0;
     stack_elem_t answer = 0;
 
+    printf ("\nTap to do every command ;)\n");
+
     while (processor->instruction_pointer < processor->number_of_int_for_buf) {
         int c = getchar ();
 
@@ -138,9 +154,10 @@ void pop_command (processor_t* processor) {
 
     stack_elem_t value = pop_value (processor);
 
-    for (int i = 0; i < 4; i++) {
-        if (processor->array_of_registers[i].num_among_registers == reg_num) {
-            processor->array_of_registers[i].value_of_reg = value;
+    for (int i = 0; i < QUANTITY_OF_REGS; i++) {
+        if ((processor->array_of_registers[i]).num_among_registers == reg_num) {
+            (processor->array_of_registers[i]).value_of_reg = value;
+            printf ("\n\n\nreg_value %d in array_of_registers: " SP "\n\n\n", i, (processor->array_of_registers[i]).value_of_reg);
             break;
         }
     }
@@ -392,7 +409,7 @@ void dump_stack (processor_t* processor, const char* func, int line) {
     printf ("    data address:   %p\n", (const void*)(processor->stk).data);
 
     if ((processor->stk).data != NULL && (processor->stk).capacity > 0)
-        print_data_elements_vm ((processor->stk).data, (processor->stk).capacity, (processor->stk).size);
+        print_data_elements_vm ((processor->stk).data, (processor->stk).size);
 
     printf ("\n    size:           %zd\n", (processor->stk).size);
     printf ("    capacity:       %zd\n", (processor->stk).capacity);
@@ -428,7 +445,7 @@ void dump_stack (processor_t* processor, const char* func, int line) {
         printf ("ERROR: data pointer is NULL\n");
 }
 
-void print_data_elements_vm (const stack_elem_t* data, size_t capacity, size_t size) {
+void print_data_elements_vm (const stack_elem_t* data, size_t size) {
     assert (data != NULL);
 
     #ifndef NDEBUG
@@ -437,14 +454,7 @@ void print_data_elements_vm (const stack_elem_t* data, size_t capacity, size_t s
         printf ("\n    data in data:\n");
     #endif
 
-    #ifndef NDEBUG
-        printf ("        [-1] canary: <" SP "> ", data[-1]);
-        stackerr_t left_canary_check = check_first_data_canary (data[-1]);
-        if (left_canary_check == STACK_OK) printf ("(ALIVE)\n");
-        else printf ("(NEED YOUR HELP, PROGRAMMER)\n");
-    #endif
-
-    for (size_t i = 0; i < capacity; i++)
+    for (size_t i = 0; i < 4; i++)
     {
         if (i < size)
             printf ("       *[%zd] element: <" SP ">\n", i, data[i]);
@@ -454,35 +464,38 @@ void print_data_elements_vm (const stack_elem_t* data, size_t capacity, size_t s
             #endif
         }
     }
-
-    #ifndef NDEBUG
-        printf ("        [%zd] canary:  <" SP"> ", capacity, data[capacity]);
-        stackerr_t right_canary_check = check_second_data_canary (data[capacity]);
-        if (right_canary_check == STACK_OK) printf ("(ALIVE)\n");
-        else printf ("(NEED YOUR HELP, PROGRAMMER)\n");
-    #endif
 }
 
 void dump_buffer_with_commands (processor_t* processor) {
     assert (processor != NULL);
 
+    int cells_per_line = 15;
+
     printf ("\nbuffer_with commands: (" GREEN_BACKGROUND "green" NO_COLOR " command is doing now) \n\n");
 
-    printf ("number of cell in buffer: ");
-    for (int i = 0; i < processor->number_of_int_for_buf; i++) {
-        if (i == processor->instruction_pointer) {
-            printf (GREEN_BACKGROUND "%3d" NO_COLOR, i);
+    for (int start = 0; start < processor->number_of_int_for_buf; start += cells_per_line) {
+        int end = start + cells_per_line;
+        if (end > processor->number_of_int_for_buf) {
+            end = processor->number_of_int_for_buf;
         }
 
-        else printf ("%3d", i);
-    }
-    printf ("\n");
+        printf ("   cell:   ");
+        for (int i = start; i < end; i++) {
+            if (i == processor->instruction_pointer) {
+                printf (GREEN_BACKGROUND "%4d" NO_COLOR, i);
+            }
 
-    printf ("value of cell in buffer:  ");
-    for (int i = 0; i < processor->number_of_int_for_buf; i++) {
-        printf ("%3d", (processor->buffer_with_commands)[i]);
+            else printf ("%4d", i);
+        }
+
+        printf ("\n");
+
+        printf ("   value:  ");
+        for (int i = start; i < end; i++) {
+            printf ("%4d", (processor->buffer_with_commands)[i]);
+        }
+        printf ("\n\n");
     }
-    printf ("\n");
 }
 
 void dump_registers (processor_t* processor) {
