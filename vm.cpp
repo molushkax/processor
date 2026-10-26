@@ -2,7 +2,6 @@
 #include "commands.h"
 #include "vm.h"
 
-//TODO обработка комментариев норм
 //TODO ошибки
 //TODO метки именами
 //TODO disass
@@ -10,8 +9,8 @@
 //TODO bytecode
 //TODO по функциям асс
 //TODO header struct
-//TODO enter
 //TODO reg raznie
+//TODO ядом регистры
 
 int main () {
     processor_t processor = {};
@@ -19,11 +18,11 @@ int main () {
     for (size_t i = 0; i < QUANTITY_OF_REGS; i++) {
         processor.array_of_registers[i] = array_of_registers[i];
     }
-    const char* code_lst = "code.lst";
+    const char* code_lst = "code.bin";
 
     processor.number_of_int_for_buf = count_ints_in_file (code_lst);
     if (processor.number_of_int_for_buf <= 0) {
-        fprintf (stderr, "empty or missing %s\n", code_lst);
+        fprintf (stderr, "ERROR: empty or missing %s\n", code_lst);
         return 1;
     }
 
@@ -45,35 +44,26 @@ int main () {
 int count_ints_in_file (const char* code_lst) {
     assert (code_lst != NULL);
 
-    FILE* f = fopen (code_lst, "r");
-    if (!f) { perror ("count: open"); return 0; }
-
-    int counter = 0;
-    int x = 0;
-    while (fscanf (f, "%d", &x) == 1) {
-        counter++;
-    }
+    FILE* f = fopen (code_lst, "rb");
+    if (!f) {perror ("count: open"); return 0;}
+    fseek (f, 0, SEEK_END);
+    long size = ftell (f);
     fclose (f);
-    return counter;
+
+    return int (size / sizeof (uint32_t));
 }
 
 void create_buffer_with_commands (processor_t* processor, const char* code_lst) {
     assert (processor != NULL);
 
-    FILE* f = fopen (code_lst, "r");
+    FILE* f = fopen (code_lst, "rb");
     if (f == NULL) {
         fprintf (stderr, "no such file\n");
         return;
     }
 
-    size_t i = 0;
-    int x = 0;
-
-    while (fscanf (f, "%d", &x) == 1 && i < (size_t)(processor->number_of_int_for_buf)) {
-        (processor->buffer_with_commands)[i] = x;
-        i++;
-    }
-
+    fread (processor->buffer_with_commands, sizeof (uint32_t),
+           processor->number_of_int_for_buf, f);
     fclose (f);
 }
 
@@ -157,7 +147,6 @@ void pop_command (processor_t* processor) {
     for (int i = 0; i < QUANTITY_OF_REGS; i++) {
         if ((processor->array_of_registers[i]).num_among_registers == reg_num) {
             (processor->array_of_registers[i]).value_of_reg = value;
-            printf ("\n\n\nreg_value %d in array_of_registers: " SP "\n\n\n", i, (processor->array_of_registers[i]).value_of_reg);
             break;
         }
     }
@@ -316,6 +305,8 @@ void jne_command (processor_t* processor) {
 void conditional_jump (processor_t* processor, bool condition) {
     assert (processor != NULL);
 
+    stack_elem_t value1 = pop_value (processor);
+    stack_elem_t value2 = pop_value (processor);
     int target = (processor->buffer_with_commands)[processor->instruction_pointer + 1];
 
     if (condition) {

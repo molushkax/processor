@@ -3,22 +3,23 @@
 #include "commands.h"
 
 int main () {
-    const char* code_asm = "code.asm";
-    const char* code_lst = "code.lst";
+    const char* code_asm = "code_fib.asm";
+    const char* code_bin = "code.bin";
 
     info_for_compile compile_info = {};
-    compile_info.labels = (int*)calloc (MAX_NUMBERS_OF_LABELS, sizeof (int));
+    compile_info.labels = (label_info*)calloc (MAX_NUMBERS_OF_LABELS, sizeof (label_info));
+    compile_info.num_of_labels = 0;
 
     read_commands_from_file (&compile_info, code_asm, __FUNCTION__);
     write_pointers_to_strings_in_index (&compile_info, __FUNCTION__);
-    FILE* file_code_lst = fopen (code_lst, "w");
+    FILE* file_code_bin = fopen (code_bin, "wb");
 
     for (size_t i = 0; i < compile_info.number_of_strings; i++) {
         printf ("string %zu: %s\n", i+1, (compile_info.index)[i].start_ptr);
     }
 
-    read_words (file_code_lst, &compile_info);
-    fclose (file_code_lst);
+    read_words (file_code_bin, &compile_info);
+    fclose (file_code_bin);
 
     free (compile_info.buffer);
     return 0;
@@ -28,17 +29,17 @@ size_t read_commands_from_file (info_for_compile* compile_info, const char* file
     assert (compile_info != NULL);
     assert (filename  != NULL);
 
-    get_size_of_file (filename, &(compile_info->bytes_for_code_lst));
+    get_size_of_file (filename, &(compile_info->bytes_for_code_bin));
 
     compile_info->file_code_asm = open (filename, O_RDONLY);
     check_of_opening_file (compile_info->file_code_asm, caller);
 
-    compile_info->buffer = (char*)malloc (compile_info->bytes_for_code_lst + 1);
+    compile_info->buffer = (char*)malloc (compile_info->bytes_for_code_bin + 1);
     check_of_memory_allocation (compile_info->buffer, caller);
 
     compile_info->number_of_read_info = read_file (compile_info->file_code_asm,
                                                    &(compile_info->buffer),
-                                                   (int)(compile_info->bytes_for_code_lst),
+                                                   (int)(compile_info->bytes_for_code_bin),
                                                    caller);
     compile_info->buffer[compile_info->number_of_read_info] = '\0';
     compile_info->number_of_strings = count_strings_in_buffer (compile_info->buffer);
@@ -96,20 +97,7 @@ size_t fill_index_with_string_pointers (info_for_compile* compile_info) {
     }
 
     if (j > 0 && (compile_info->index)[j - 1].length == 0) {
-        (compile_info->index)[j - 1].length = (size_t)(&(compile_info->buffer)[compile_info->bytes_for_code_lst] - (compile_info->index)[j - 1].start_ptr);
-    }
-
-    for (size_t k = 0; k < j; k++) {
-        char*  start = (compile_info->index)[k].start_ptr;
-        size_t len = (compile_info->index)[k].length;
-
-        for (size_t p = 0; p < len; p++) {
-            if (start[p] == ';') {
-                start[p] = '\0';
-                (compile_info->index)[k].length = p;
-                break;
-            }
-        }
+        (compile_info->index)[j - 1].length = (size_t)(&(compile_info->buffer)[compile_info->bytes_for_code_bin] - (compile_info->index)[j - 1].start_ptr);
     }
 
     return j;
@@ -119,7 +107,7 @@ size_t fill_index_with_string_pointers (info_for_compile* compile_info) {
 size_t count_strings_in_buffer (char* buffer) {
     assert (buffer != NULL);
 
-    size_t num = 0;
+    size_t num = 1;
     int i = 0;
     while (buffer[i] != '\0') {
         if (buffer[i] == '\n') num++; //TODO подсчет строк здесь
@@ -129,13 +117,13 @@ size_t count_strings_in_buffer (char* buffer) {
     return num;
 }
 
-int check_of_opening_file (const int file_code_lst, const char* caller) {
-    if (file_code_lst == -1) {
+int check_of_opening_file (const int file_code_bin, const char* caller) {
+    if (file_code_bin == -1) {
         print_custom_error (ENOENT, caller, __LINE__);
         return -1;
     }
     else {
-        printf ("Descriptor of file: %d\n\n", file_code_lst);
+        printf ("Descriptor of file: %d\n\n", file_code_bin);
         return 0;
     }
 }
@@ -156,18 +144,18 @@ int check_of_memory_allocation (const char* buffer, const char* caller) {
     else return 0;
 }
 
-int read_file (int file_code_lst, char** buffer, int bytes_for_code_lst, const char* caller) {
-    ssize_t read_info = read (file_code_lst, *buffer, (int)bytes_for_code_lst);
-    check_of_reading_file (file_code_lst, read_info, caller);
+int read_file (int file_code_bin, char** buffer, int bytes_for_code_bin, const char* caller) {
+    ssize_t read_info = read (file_code_bin, *buffer, (int)bytes_for_code_bin);
+    check_of_reading_file (file_code_bin, read_info, caller);
     (*buffer)[read_info] = '\0';
 
     return (int)read_info;
 }
 
-int check_of_reading_file (const int file_code_lst, const ssize_t number_of_read_info, const char* caller) {
+int check_of_reading_file (const int file_code_bin, const ssize_t number_of_read_info, const char* caller) {
     if (number_of_read_info == -1) {
         print_custom_error (EIO, caller, __LINE__);
-        close (file_code_lst);
+        close (file_code_bin);
         return -1;
     }
     else {
@@ -199,9 +187,9 @@ void print_custom_error (int error_code, const char* function_name, int line) {
              error_code, message, function_name, line);
 }
 
-int free_text_and_index (string_info* index, char* buffer, size_t bytes_for_code_lst, size_t number_of_strings) {
+int free_text_and_index (string_info* index, char* buffer, size_t bytes_for_code_bin, size_t number_of_strings) {
     memset (index,  0, (number_of_strings + 1) * sizeof (string_info));
-    memset (buffer, 0, bytes_for_code_lst + 1);
+    memset (buffer, 0, bytes_for_code_bin + 1);
 
     free (buffer);
     free (index);
@@ -212,8 +200,8 @@ int free_text_and_index (string_info* index, char* buffer, size_t bytes_for_code
     return 0;
 }
 
-int read_words (FILE* code_lst, info_for_compile* compile_info) {
-    assert (code_lst     != NULL);
+int read_words (FILE* code_bin, info_for_compile* compile_info) {
+    assert (code_bin     != NULL);
     assert (compile_info != NULL);
     assert (compile_info->index != NULL);
 
@@ -226,19 +214,24 @@ int read_words (FILE* code_lst, info_for_compile* compile_info) {
     // ---------- второй проход: генерация кода ----------
     compile_info->instruction_pointer = 0;
     for (size_t line = 0; line < compile_info->number_of_strings; line++) {
-        int result = process_line (code_lst, compile_info, line, /*pass=*/2);
+        int result = process_line (code_bin, compile_info, line, /*pass=*/2);
         if (result < 0) return -1;
     }
 
     return compile_info->instruction_pointer;
 }
 
-int process_line (FILE* code_lst, info_for_compile* compile_info, size_t line, int pass) {
+int process_line (FILE* code_bin, info_for_compile* compile_info, size_t line, int pass) {
     assert (compile_info != NULL);
     assert (compile_info->index != NULL);
 
-    const char* start  = compile_info->index[line].start_ptr;
-    size_t      length = compile_info->index[line].length;
+    string_info* str = &(compile_info->index[line]);
+
+    // --------------- обрезаем комменты ---------------
+    skip_comments(str);
+
+    const char* start  = str->start_ptr;
+    size_t      length = str->length;
 
     if (start == NULL || start[0] == '\0') {
         return 0;
@@ -247,6 +240,9 @@ int process_line (FILE* code_lst, info_for_compile* compile_info, size_t line, i
     // ------- пропускаем пробелы, скипаем пустые строки -----
     int no_commands = filter_codestyle (&start, &length);
     if (no_commands) return 0;
+
+    str->start_ptr = start;
+    str->length    = length;
 
     size_t i = 0;
     int j = 0;
@@ -271,20 +267,16 @@ int process_line (FILE* code_lst, info_for_compile* compile_info, size_t line, i
 
     int arg = 0;
     // ---------- нет аргумента ----------------
-    if (i > length || start[i] == '\0') {
-        if (pass == 2) fprintf (code_lst, "%d\n", command_code);
-        compile_info->instruction_pointer++;
-        return 0;
-    }
+    if (arg == 0) arg = processing_commands_with_no_arguments (&i, compile_info, start, command_code, length, pass, code_bin);
 
     // ---------- если аргумент - регистр ----------
-    arg += commands_with_registers_processing (&i, compile_info, start, command_name, line, pass, code_lst);
+    if (arg == 0) arg = processing_commands_with_registers    (&i, compile_info, start, command_name, line, pass, code_bin);
 
     // ---------- если аргумент - число ----------
-    arg += commands_with_numbers_processing   (&i, compile_info, start, command_name, command_code, line, pass, code_lst);
+    if (arg == 0) arg = processing_commands_with_numbers      (&i, compile_info, start, command_name, command_code, line, pass, code_bin);
 
     // ---------- если аргумент - метка ----------
-    arg += commands_with_labels_processing   (&i, compile_info, start, command_name, command_code, line, pass, code_lst);
+    if (arg == 0) arg = processing_commands_with_labels       (&i, compile_info, start, command_name, command_code, line, pass, code_bin);
 
     // ------------- что-либо другое -------------
     if (arg == 0) {
@@ -304,27 +296,23 @@ int labels_processing (size_t* i, info_for_compile* compile_info, size_t line, c
     if (start[0] == ':') {
         (*i)++;
 
-        int label_number = 0;
-        bool has_digits = false;
-        while (*i < length && isdigit((unsigned char)start[*i])) {
-            label_number = label_number * 10 + (start[*i] - '0');
+        char label_name[MAX_LABEL_NAME_LEN] = {};
+        int j = 0;
+
+        while (*i < length && (isalnum((unsigned char)start[*i]) || start[*i] == '_')) {
+            label_name[j++] = start[*i];
             (*i)++;
-            has_digits = true;
         }
+        label_name[j] = '\0';
 
-        if (!has_digits) {
-            printf ("Label without number: %s\n", start);
-            return -1;
-        }
-
-        if (label_number < 0 || label_number >= MAX_NUMBERS_OF_LABELS) {
-            printf ("Label number %d out of range [0, %d)\n", label_number, MAX_NUMBERS_OF_LABELS);
+        if (j == 0) {
+            printf ("ERROR: empty label anme on line %zu\n", line + 1);
             return -1;
         }
 
         if (pass == 1) {
-            (compile_info->labels)[label_number] = compile_info->instruction_pointer;
-            printf ("{pass 1} label :%d -> ip %d\n", label_number, compile_info->instruction_pointer);
+            set_label (compile_info, label_name, compile_info->instruction_pointer);
+            printf ("{pass 1} label :%s -> ip %d\n", label_name, compile_info->instruction_pointer);
         }
 
         return 1;
@@ -379,14 +367,44 @@ int search_of_command (int* command_code, const char** command_name, const char*
     return 0;
 }
 
-int commands_with_registers_processing (size_t* i, info_for_compile* compile_info, const char* start,
-                                        const char* command_name, size_t line, int pass, FILE* code_lst) {
+int filter_codestyle (const char** start, size_t* length) {
+    while ((**start == ' ' || **start == '\t') && *length > 0) {
+        (*start)++;
+        if (*length > 0) (*length)--;
+    }
+
+    if (*length == 0) {
+        return 1;
+    }
+
+    return 0;
+}
+
+int processing_commands_with_no_arguments (size_t* i, info_for_compile* compile_info, const char* start,
+                                           int command_code, size_t length, int pass, FILE* code_bin) {
+    assert (i != NULL);
+    assert (compile_info != NULL);
+
+    if ((*i) >= length || start[*i] == '\0') {
+        if (pass == 2) {
+            int32_t code = command_code;
+            fwrite(&code, sizeof(code), 1, code_bin);
+        }
+        compile_info->instruction_pointer += 1;
+        return 1;
+    }
+
+    return 0;
+}
+
+int processing_commands_with_registers (size_t* i, info_for_compile* compile_info, const char* start,
+                                        const char* command_name, size_t line, int pass, FILE* code_bin) {
     assert (i != NULL);
     assert (compile_info != NULL);
 
     size_t length = compile_info->index[line].length;
 
-    if (isalpha((unsigned char)start[*i])) {
+    if (*i < length && isalpha((unsigned char)start[*i])) {
         int r = 0;
         char reg_word[10] = {};
         while ((*i) < length && isalpha((unsigned char)start[*i])) {
@@ -425,7 +443,10 @@ int commands_with_registers_processing (size_t* i, info_for_compile* compile_inf
             }
         }
 
-        if (pass == 2) fprintf (code_lst, "%d %d\n", reg_command_code, reg_num);
+        if (pass == 2) {
+            int32_t pair[2] = {reg_command_code, reg_num};
+            fwrite(pair, sizeof(int32_t), 2, code_bin);
+        }
         compile_info->instruction_pointer += 2;
         return 1;
     }
@@ -433,14 +454,14 @@ int commands_with_registers_processing (size_t* i, info_for_compile* compile_inf
     return 0;
 }
 
-int commands_with_numbers_processing (size_t* i, info_for_compile* compile_info, const char* start,
-                                      const char* command_name, int command_code, size_t line, int pass, FILE* code_lst) {
+int processing_commands_with_numbers (size_t* i, info_for_compile* compile_info, const char* start,
+                                      const char* command_name, int command_code, size_t line, int pass, FILE* code_bin) {
     assert (i != NULL);
     assert (compile_info != NULL);
 
     size_t length = compile_info->index[line].length;
 
-    if (isdigit((unsigned char)start[*i])) {
+    if (*i < length && isdigit((unsigned char)start[*i])) {
         if (strcmp(command_name, "POP") == 0) {
             printf ("POP requires a register, not a number\n");
             return -1;
@@ -455,7 +476,10 @@ int commands_with_numbers_processing (size_t* i, info_for_compile* compile_info,
         }
         num_word[n] = '\0';
 
-        if (pass == 2) fprintf (code_lst, "%d %s\n", command_code, num_word);
+        if (pass == 2) {
+            int32_t pair[2] = {command_code, atoi(num_word)};
+            fwrite(pair, sizeof(int32_t), 2, code_bin);
+        }
         compile_info->instruction_pointer += 2;
         return 1;
     }
@@ -463,37 +487,45 @@ int commands_with_numbers_processing (size_t* i, info_for_compile* compile_info,
     return 0;
 }
 
-int commands_with_labels_processing (size_t* i, info_for_compile* compile_info, const char* start,
-                                      const char* command_name, int command_code, size_t line, int pass, FILE* code_lst) {
+int processing_commands_with_labels (size_t* i, info_for_compile* compile_info, const char* start,
+                                    const char* command_name, int command_code, size_t line, int pass, FILE* code_bin) {
     assert (i != NULL);
     assert (compile_info != NULL);
 
     size_t length = compile_info->index[line].length;
 
-    if (start[*i] == ':') {
+    if (start[*i] == ':' && *i < length) {
         (*i)++;
 
-        int label_number = 0;
-        bool has_digits = false;
+        char label_name[MAX_LABEL_NAME_LEN] = {};
+        int j = 0;
 
-        while ((*i) < length && isdigit((unsigned char)start[*i])) {
-            label_number = label_number * 10 + (start[*i] - '0');
+        while ((*i) < length && (isalnum((unsigned char)start[*i]) || start[*i] == '_')) {
+            label_name[j++] = start[*i];
             (*i)++;
-            has_digits = true;
         }
+        label_name[j] = '\0';
 
-        if (!has_digits) {
-            printf ("Label argument without number after %s\n", command_name);
+        if (j == 0) {
+            printf ("Label argument without name after %s\n", command_name);
             return -1;
         }
 
-        if (label_number < 0 || label_number >= MAX_NUMBERS_OF_LABELS) {
-            printf ("Label number %d out of range [0, %d)\n", label_number, MAX_NUMBERS_OF_LABELS);
-            return -1;
+        int address = find_label_by_name (compile_info, label_name);
+
+        if (address == -1) {
+            if (pass == 2) {
+                printf ("ERROR: undefined label ':%s' on line %zu\n", label_name, line + 1);
+                return -1;
+            }
+
+            compile_info->instruction_pointer += 2;
+            return 1;
         }
 
         if (pass == 2) {
-            fprintf (code_lst, "%d %d\n", command_code, (compile_info->labels)[label_number]);
+            int32_t pair[2] = {command_code, address};
+            fwrite(pair, sizeof(int32_t), 2, code_bin);
         }
 
         compile_info->instruction_pointer += 2;
@@ -503,15 +535,33 @@ int commands_with_labels_processing (size_t* i, info_for_compile* compile_info, 
     return 0;
 }
 
-int filter_codestyle (const char** start, size_t* length) {
-    while (**start == ' ' || **start == '\t') {
-        (*start)++;
-        if (*length > 0) (*length)--;
+void skip_comments (string_info* str) {
+    assert (str != NULL);
+
+    for (size_t p = 0; p < str->length; p++) {
+        if ((str->start_ptr)[p] == ';') {
+            str->length = p;
+            return;
+        }
+    }
+}
+
+int find_label_by_name (info_for_compile* compile_info, const char* name) {
+    for (int i = 0; i < compile_info->num_of_labels; i++) {
+        if (strcmp (compile_info->labels[i].name, name) == 0) {
+            return compile_info->labels[i].address;
+        }
     }
 
-    if ((*start)[0] == '\0') {
-        return 1;
+    return -1; //не найдена
+}
+
+void set_label (info_for_compile* compile_info, const char* name, int address) {
+    for (int i = 0; i < compile_info->num_of_labels; i++) {
+        if (strcmp (compile_info->labels[i].name, name) == 0) return;
     }
 
-    return 0;
+    strncpy (compile_info->labels[compile_info->num_of_labels].name, name, MAX_LABEL_NAME_LEN - 1);
+    compile_info->labels[compile_info->num_of_labels].address = address;
+    compile_info->num_of_labels++;
 }

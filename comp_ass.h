@@ -13,20 +13,27 @@
 #include <assert.h>
 
 #define MAX_NUMBERS_OF_LABELS 20
+#define MAX_LABEL_NAME_LEN    16
+
+struct label_info {
+    char name[MAX_LABEL_NAME_LEN];
+    int  address;
+};
 
 struct string_info {
-    char*  start_ptr;   // указатель на начало строки в общем буфере
-    size_t length;      // длина строки (без '\0')
+    const char*  start_ptr;
+    size_t length;
 };
 
 struct info_for_compile {
-    size_t bytes_for_code_lst;
+    size_t bytes_for_code_bin;
     size_t number_of_read_info;
     int    file_code_asm;
     char*  buffer;
     size_t number_of_strings;
     string_info* index;
-    int*   labels;
+    label_info*  labels;
+    int    num_of_labels;
     int    instruction_pointer;
 };
 
@@ -64,11 +71,18 @@ int    process_line                       (FILE* code_lst, info_for_compile* com
 int    labels_processing                  (size_t* i, info_for_compile* compile_info, size_t line, const char* start, int pass);
 int    get_name_of_command                (size_t* i, int* j, info_for_compile* compile_info, size_t line, const char* start, char* word);
 int    search_of_command                  (int* command_code, const char** command_name, const char* word, int pass);
-int    commands_with_registers_processing (size_t* i, info_for_compile* compile_info, const char* start,
-                                           const char* command_name, size_t line, int pass, FILE* code_lst);
-int    commands_with_numbers_processing   (size_t* i, info_for_compile* compile_info, const char* start,
-                                           const char* command_name, int command_code, size_t line, int pass, FILE* code_lst);
-int    commands_with_labels_processing    (size_t* i, info_for_compile* compile_info, const char* start,
-                                           const char* command_name, int command_code, size_t line, int pass, FILE* code_lst);
 int    filter_codestyle                   (const char** start, size_t* length);
+
+int    processing_commands_with_no_arguments (size_t* i, info_for_compile* compile_info, const char* start,
+                                              int command_code, size_t length, int pass, FILE* code_lst);
+int    processing_commands_with_registers    (size_t* i, info_for_compile* compile_info, const char* start,
+                                              const char* command_name, size_t line, int pass, FILE* code_lst);
+int    processing_commands_with_numbers      (size_t* i, info_for_compile* compile_info, const char* start,
+                                              const char* command_name, int command_code, size_t line, int pass, FILE* code_lst);
+int    processing_commands_with_labels       (size_t* i, info_for_compile* compile_info, const char* start,
+                                              const char* command_name, int command_code, size_t line, int pass, FILE* code_lst);
+void skip_comments      (string_info* str);
+int  find_label_by_name (info_for_compile* compile_info, const char* name);
+void set_label          (info_for_compile* compile_inf0, const char* name, int address);
+
 #endif
