@@ -2,14 +2,16 @@
 #define COMMANDS_H
 
 #define QUANTITY_OF_REGS 4
-enum commands { HLT = 0, PUSH, ADD, SUB, MUL, DIV, OUT, IN, POP, PUSHR, JMP, CALL, JA, JAE, JB, JBE, JE, JNE, RET, SQRT };
+
+enum commands { HLT = 0, PUSH, ADD, SUB, MUL, DIV, OUT, IN, POP, PUSHR, JMP,
+                CALL, JA, JAE, JB, JBE, JE, JNE, RET, SQRT, PUSHM, POPM, DRAW, PRINT };
 
 struct comp_ass {
     const char* name_command_assembler;
     int         code_of_command;
 };
 
-const struct comp_ass code_of_commands[] {
+const struct comp_ass code_of_commands[] = {//TODO check
     { "HLT",   0},
     { "PUSH",  1},
     { "ADD",   2},
@@ -29,30 +31,11 @@ const struct comp_ass code_of_commands[] {
     { "JE",   16},
     { "JNE",  17},
     { "RET",  18},
-    { "SQRT", 19}
-};
-
-struct register_ini
-{
-    char name_of_register[10];
-    stack_elem_t value_of_reg;
-    int num_among_registers;
-};
-
-register_ini array_of_registers[] = {//TODO
-    {"AX", 0, 1},
-    {"BX", 0, 2},
-    {"CX", 0, 3},
-    {"DX", 0, 4}
-};
-
-struct processor_t {
-    stack_t stk;
-    stack_t call_stk;
-    int     number_of_int_for_buf;
-    int*    buffer_with_commands;
-    int     instruction_pointer;
-    register_ini array_of_registers[QUANTITY_OF_REGS];
+    { "SQRT", 19},
+    { "PUSHM", 20},
+    { "POPM", 21},
+    { "DRAW", 22},
+    { "PRINT", 23}
 };
 
 #endif

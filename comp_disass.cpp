@@ -1,4 +1,4 @@
-#include "disass.h"
+#include "comp_disass.h"
 #include "commands.h"
 
 int main () {
@@ -173,6 +173,11 @@ int disass_one (info_for_disass* disass_info, int ip, const char* caller) {
         return ip + 2;
     }
 
+    if (opcode == PUSHM || opcode == POPM) {
+        printf ("%04d:  %-5s [%d]\n", ip, name, arg);
+        return ip + 2;
+    }
+
     if (opcode == PUSH) {
         printf ("%04d:  %-5s %d\n", ip, name, arg);
         return ip + 2;
@@ -193,13 +198,13 @@ const char* cmd_name (int code) {
 }
 
 const char* reg_name_by_num (int reg_num) {
-    size_t n = sizeof (array_of_registers) / sizeof (array_of_registers[0]);
+    size_t n = sizeof (disass_registers) / sizeof (disass_registers[0]);
     for (size_t i = 0; i < n; i++) {
-        if (array_of_registers[i].num_among_registers == reg_num) {
-            return array_of_registers[i].name_of_register;
+        if (disass_registers[i].num_among_registers == reg_num) {
+            return disass_registers[i].name_of_register;
         }
     }
-    return "??";
+    return "?";
 }
 
 int cells_for_opcode (int opcode) {
@@ -215,7 +220,8 @@ int cells_for_opcode (int opcode) {
         case CALL: case JA:
         case JAE:  case JB:
         case JBE:  case JE:
-        case JNE:
+        case JNE:  case PUSHM:
+        case POPM:
             return 2;
         default:
             return 0;

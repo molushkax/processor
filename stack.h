@@ -37,6 +37,7 @@ const double ALMOST_ZERO_VALUE = 0.00000001;
 
 #define RED "\033[31m"
 #define GREEN_BACKGROUND "\033[42m"
+#define YELLOW_BACKGROUND "\033[43m"
 #define NO_COLOR "\033[0m"
 #define SP "%lg"
 #define FATAL_ERROR 67

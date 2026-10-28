@@ -3,21 +3,17 @@
 #include "vm.h"
 
 //TODO ошибки
-//TODO метки именами
-//TODO disass
 //TODO size > 2 не ассерт а помягче для пользователя
 //TODO bytecode
-//TODO по функциям асс
-//TODO header struct
-//TODO reg raznie
+//TODO header struct работу с ней b
 //TODO ядом регистры
+//TODO графика
+//TODO оперативка и на чем
+//TODO круг
+//TODO листинг
 
 int main () {
     processor_t processor = {};
-
-    for (size_t i = 0; i < QUANTITY_OF_REGS; i++) {
-        processor.array_of_registers[i] = array_of_registers[i];
-    }
     const char* code_lst = "code.bin";
 
     processor.number_of_int_for_buf = count_ints_in_file (code_lst);
@@ -30,9 +26,7 @@ int main () {
 
     create_buffer_with_commands (&processor, code_lst);
 
-    stack_elem_t answer = do_commands_from_buffer (&processor);
-
-    printf ("answer: " SP "\n", answer);
+    do_commands_from_buffer (&processor);
 
     free (processor.buffer_with_commands);
     stack_destroy (&(processor.stk));
@@ -50,7 +44,7 @@ int count_ints_in_file (const char* code_lst) {
     long size = ftell (f);
     fclose (f);
 
-    return int (size / sizeof (uint32_t));
+    return (int)(size / sizeof (uint32_t));
 }
 
 void create_buffer_with_commands (processor_t* processor, const char* code_lst) {
@@ -79,17 +73,17 @@ stack_elem_t do_commands_from_buffer (processor_t* processor) {
     stack_init (&(processor->call_stk));
 
     processor->instruction_pointer = 0;
-    stack_elem_t answer = 0;
 
-    printf ("\nTap to do every command ;)\n");
+    //printf ("\nTap to do every command ;)\n");
 
+    memset (processor->ram, 0, sizeof (processor->ram));
     while (processor->instruction_pointer < processor->number_of_int_for_buf) {
-        int c = getchar ();
+        //int c = getchar ();
 
-        dump_registers (processor);
+        /*dump_registers_and_ram (processor);
         printf ("\nInstruction pointer: %d\n", processor->instruction_pointer);
         dump_buffer_with_commands (processor);
-        printf ("\ncommand number %d:\n\n", (processor->buffer_with_commands)[processor->instruction_pointer]);
+        printf ("\ncommand number %d:\n\n", (processor->buffer_with_commands)[processor->instruction_pointer]);*/
 
         switch ((processor->buffer_with_commands)[processor->instruction_pointer]) {
             case PUSH:  push_command  (processor); break;
@@ -110,12 +104,16 @@ stack_elem_t do_commands_from_buffer (processor_t* processor) {
             case RET:   ret_command   (processor); break;
             case IN:    in_command    (processor); break;
             case SQRT:  sqrt_command  (processor); break;
-            case OUT:   out_command   (processor, &answer); break;
-            case HLT:   return answer;
+            case PUSHM: pushm_command (processor); break;
+            case POPM:  popm_command  (processor); break;
+            case DRAW:  draw_command  (processor); break;
+            case PRINT: print_command (processor); break;
+            case OUT:   out_command   (processor); break;
+            case HLT:   return 0;
             default:    fprintf (stderr, "Unknown command\n"); return -1;
         }
 
-        dump_stack (processor, __FUNCTION__, __LINE__);
+        //dump_stack (processor, __FUNCTION__, __LINE__);
     }
 
     return 0;
@@ -142,14 +140,14 @@ void pop_command (processor_t* processor) {
 
     int reg_num = (processor->buffer_with_commands)[processor->instruction_pointer + 1];
 
-    stack_elem_t value = pop_value (processor);
-
-    for (int i = 0; i < QUANTITY_OF_REGS; i++) {
-        if ((processor->array_of_registers[i]).num_among_registers == reg_num) {
-            (processor->array_of_registers[i]).value_of_reg = value;
-            break;
-        }
+    if (reg_num < 1 || reg_num > QUANTITY_OF_REGS) {
+        fprintf (stderr, "POP: invalid register number %d\n", reg_num);
+        processor->instruction_pointer += 2;
+        return;
     }
+
+    stack_elem_t value = pop_value (processor);
+    processor->reg_values[reg_num - 1] = value;
 
     processor->instruction_pointer += 2;
 }
@@ -159,7 +157,13 @@ void pushr_command (processor_t* processor) {
 
     int reg_num = (processor->buffer_with_commands)[processor->instruction_pointer + 1];
 
-    PUSH_AND_CHECK (&(processor->stk), (processor->array_of_registers)[reg_num - 1].value_of_reg);
+    if (reg_num < 1 || reg_num > QUANTITY_OF_REGS) {
+        fprintf (stderr, "PUSHR: invalid register number %d\n", reg_num);
+        processor->instruction_pointer += 2;
+        return;
+    }
+
+    PUSH_AND_CHECK (&(processor->stk), (processor->reg_values)[reg_num - 1]);
 
     processor->instruction_pointer += 2;
 }
@@ -213,26 +217,21 @@ void div_command (processor_t* processor) {
     processor->instruction_pointer += 1;
 }
 
-void out_command (processor_t* processor, stack_elem_t* answer) {
+void out_command (processor_t* processor) {
     assert (processor != NULL);
 
-    *answer = stack_top (&(processor->stk));
-    STACK_DUMP (&(processor->stk));
+    stack_elem_t answer = pop_value (processor);
+    printf ("answer: " SP "\n", answer);
     processor->instruction_pointer += 1;
 }
 
-void peek_two_values (processor_t* processor,
-                      stack_elem_t* value2,
-                      stack_elem_t* value1) {
-    assert (processor != NULL);
-    assert (value1   != NULL);
-    assert (value2   != NULL);
-
-    assert ((processor->stk).size >= 2);
-
-    *value1 = (processor->stk).data[(processor->stk).size - 1];   // вершина
-    *value2 = (processor->stk).data[(processor->stk).size - 2];   // второй сверху
+void pop_two_values (processor_t* processor, stack_elem_t* value2, stack_elem_t* value1) {
+    // Сначала снимаем вершину (это будет value1)
+    *value1 = pop_value(processor);
+    // Затем снимаем следующее (это будет value2)
+    *value2 = pop_value(processor);
 }
+
 
 void jmp_command (processor_t* processor) {
     assert (processor != NULL);
@@ -252,7 +251,7 @@ void ja_command (processor_t* processor) {
     assert (processor != NULL);
 
     stack_elem_t value2 = 0, value1 = 0;
-    peek_two_values (processor, &value2, &value1);
+    pop_two_values (processor, &value2, &value1);
 
     conditional_jump (processor, value2 > value1);
 }
@@ -261,7 +260,7 @@ void jae_command (processor_t* processor) {
     assert (processor != NULL);
 
     stack_elem_t value2 = 0, value1 = 0;
-    peek_two_values (processor, &value2, &value1);
+    pop_two_values (processor, &value2, &value1);
 
     conditional_jump (processor, value2 >= value1);
 }
@@ -270,7 +269,7 @@ void jb_command (processor_t* processor) {
     assert (processor != NULL);
 
     stack_elem_t value2 = 0, value1 = 0;
-    peek_two_values (processor, &value2, &value1);
+    pop_two_values (processor, &value2, &value1);
 
     conditional_jump (processor, value2 < value1);
 }
@@ -279,7 +278,7 @@ void jbe_command (processor_t* processor) {
     assert (processor != NULL);
 
     stack_elem_t value2 = 0, value1 = 0;
-    peek_two_values (processor, &value2, &value1);
+    pop_two_values (processor, &value2, &value1);
 
     conditional_jump (processor, value2 <= value1);
 }
@@ -288,7 +287,7 @@ void je_command (processor_t* processor) {
     assert (processor != NULL);
 
     stack_elem_t value2 = 0, value1 = 0;
-    peek_two_values (processor, &value2, &value1);
+    pop_two_values (processor, &value2, &value1);
 
     conditional_jump (processor, equal_double(value2, value1));
 }
@@ -297,7 +296,7 @@ void jne_command (processor_t* processor) {
     assert (processor != NULL);
 
     stack_elem_t value2 = 0, value1 = 0;
-    peek_two_values (processor, &value2, &value1);
+    pop_two_values (processor, &value2, &value1);
 
     conditional_jump (processor, !equal_double(value2, value1));
 }
@@ -305,8 +304,6 @@ void jne_command (processor_t* processor) {
 void conditional_jump (processor_t* processor, bool condition) {
     assert (processor != NULL);
 
-    stack_elem_t value1 = pop_value (processor);
-    stack_elem_t value2 = pop_value (processor);
     int target = (processor->buffer_with_commands)[processor->instruction_pointer + 1];
 
     if (condition) {
@@ -489,16 +486,95 @@ void dump_buffer_with_commands (processor_t* processor) {
     }
 }
 
-void dump_registers (processor_t* processor) {
+void dump_registers_and_ram (processor_t* processor) {
     assert (processor != NULL);
 
     printf ("==================================================\n");
     printf ("\narray_of_registers:\n");
 
-    size_t number_of_regs = 4;
-    for (size_t i = 0; i < number_of_regs; i++) {
-        printf ("   reg %s = " SP "\n",
-                array_of_registers[i].name_of_register,
-                (processor->array_of_registers)[i].value_of_reg);
+    for (size_t i = 0; i < QUANTITY_OF_REGS; i++) {
+        printf ("   reg %cX = " SP "\n",
+                (char)('A' + i),
+                (processor->reg_values)[i]);
     }
+
+    printf ("\nRAM (first 10 cells):\n");
+    for (int i = 0; i < 10; i++) {
+        printf ("   RAM[%2d] = %lg\n", i, processor->ram[i]);
+    }
+}
+
+void pushm_command (processor_t* processor) {
+    assert (processor != NULL);
+
+    int address = (processor->buffer_with_commands)[processor->instruction_pointer + 1];
+
+    if (address < 0 || address >= RAM_SIZE) {
+        fprintf (stderr, "PUSHM: invalid memory address %d\n", address);
+        processor->instruction_pointer += 2;
+        return;
+    }
+
+    PUSH_AND_CHECK (&(processor->stk), processor->ram[address]);
+    processor->instruction_pointer += 2;
+}
+
+void popm_command (processor_t* processor) {
+    assert (processor != NULL);
+
+    int address = (processor->buffer_with_commands)[processor->instruction_pointer + 1];
+
+    if (address < 0 || address >= RAM_SIZE) {
+        fprintf (stderr, "PUSHM: invalid memory address %d\n", address);
+        processor->instruction_pointer += 2;
+        return;
+    }
+
+    stack_elem_t value = pop_value (processor);
+    processor->ram[address] = int(value);
+
+    processor->instruction_pointer += 2;
+}
+
+void draw_command (processor_t* processor) {
+    assert (processor != NULL);
+
+    printf(YELLOW "\n--- Video Memory Output (draw) ---\n" NO_COLOR);
+
+    for (int i = 0; i < RAM_SIZE; i++) {
+        double symbol = processor->ram[i];
+
+        if (equal_double (symbol, 0)) {
+            printf (" + ");
+        }
+
+        else printf (GREEN_BACKGROUND " * " NO_COLOR);
+
+        if ((i + 1) % 10 == 0) {
+            printf ("\n");
+        }
+    }
+
+    printf("\n---------------------------\n");
+
+    processor->instruction_pointer += 1;
+}
+
+void print_command (processor_t* processor) {
+    assert (processor != NULL);//TODO проверить ассерты
+
+    printf(YELLOW "\n--- print results ---\n" NO_COLOR);
+
+    for (int i = 0; i < 30; i++) {
+        int symbol = (int)processor->ram[i];
+
+        if (symbol >= 32 && symbol <= 126) {
+            printf (YELLOW_BACKGROUND "%c" NO_COLOR, symbol);
+        }
+
+    }
+
+    printf ("\n\n");
+
+    processor->instruction_pointer += 1;
 }
