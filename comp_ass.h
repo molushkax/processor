@@ -111,5 +111,6 @@ void        write_listing    (const info_for_compile* compile_info, const char* 
 
 void        fill_header            (info_for_compile* compile_info, bytecode_header* my_bytecode_header);
 void        fill_with_header_info  (bytecode_header* my_bytecode_header, info_for_compile* compile_info);
+bool        check_if_normal_operat_arg (int* n, size_t* i, size_t* length, const char* start);
 
 #endif

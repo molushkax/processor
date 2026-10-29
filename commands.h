@@ -3,15 +3,15 @@
 
 #define QUANTITY_OF_REGS 4
 
-enum commands { HLT = 0, PUSH, ADD, SUB, MUL, DIV, OUT, IN, POP, PUSHR, JMP,
-                CALL, JA, JAE, JB, JBE, JE, JNE, RET, SQRT, PUSHM, POPM, DRAW, PRINT };
+enum commands { HLT = 0, PUSH, ADD, SUB, MUL, DIV, OUT, IN, POP, PUSHR, JMP, CALL,
+                JA, JAE, JB, JBE, JE, JNE, RET, SQRT, PUSHM, POPM, DRAW, PRINT, POPRM };
 
 struct comp_ass {
     const char* name_command_assembler;
     int         code_of_command;
 };
 
-const struct comp_ass code_of_commands[] = {//TODO check
+const struct comp_ass code_of_commands[] = { //TODO check
     { "HLT",   0},
     { "PUSH",  1},
     { "ADD",   2},
@@ -35,7 +35,8 @@ const struct comp_ass code_of_commands[] = {//TODO check
     { "PUSHM", 20},
     { "POPM", 21},
     { "DRAW", 22},
-    { "PRINT", 23}
+    { "PRINT", 23},
+    { "POPRM", 24}
 };
 
 #endif

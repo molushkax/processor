@@ -35,6 +35,7 @@ stack_elem_t pop_value                (processor_t* processor);
 void push_command     (processor_t* processor);
 void pushr_command    (processor_t* processor);
 void pop_command      (processor_t* processor);
+void poprm_command    (processor_t* processor);
 void add_command      (processor_t* processor);
 void sub_command      (processor_t* processor);
 void mul_command      (processor_t* processor);

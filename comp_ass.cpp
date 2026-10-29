@@ -1,15 +1,15 @@
 #include "bytecode.h"
+#include "hash.h"
 #include "comp_ass.h"
 #include "commands.h"
 #include "stack.h"
-#include "hash.h"
 
 int main () {
-    const char* code_asm = "code.asm";
+    const char* code_asm = "code_new_circle.asm";
 
     info_for_compile compile_info = {};
     compile_info.labels = (label_info*)calloc (MAX_NUMBERS_OF_LABELS, sizeof (label_info));
-    compile_info.bytecode_buf = (int32_t*)calloc (MAX_NUMBER_OF_COMMANDS, sizeof (int32_t)); //TODO подумать норм колво памяти нужное
+    compile_info.bytecode_buf = (int32_t*)calloc (MAX_NUMBER_OF_COMMANDS, sizeof (int32_t));          //TODO подумать норм колво памяти нужное
     compile_info.is_cmd = (bool*)calloc (MAX_NUMBER_OF_COMMANDS, sizeof (bool));
     compile_info.num_of_labels = 0;
 
@@ -278,16 +278,16 @@ int process_line (info_for_compile* compile_info, size_t line, int pass) {
     str->start_ptr = start;
     str->length    = length;
 
-    size_t i = 0;
-    int j = 0;
+    size_t i1 = 0;
+    int i2 = 0;
     //--------- обработка меток --------
-    int label = labels_processing (&i, compile_info, line, start, pass);
+    int label = labels_processing (&i1, compile_info, line, start, pass);
     if (label == 1) return 0;
     if (label < 0)  return -1;
 
     // ---------- имя команды ----------
     char word[16] = {};
-    get_name_of_command (&i, &j, compile_info, line, start, word);
+    get_name_of_command (&i1, &i2, compile_info, line, start, word);
 
     // --------- поиск команды ----------
     int         command_code = -1;
@@ -295,22 +295,22 @@ int process_line (info_for_compile* compile_info, size_t line, int pass) {
     search_of_command (&command_code, &command_name, word, pass);
 
     // ------- пропускаем пробелы -------
-    while (i < length && start[i] == ' ') {
-        i++;
+    while (i1 < length && start[i1] == ' ') {
+        i1++;
     }
 
     int arg = 0;
     // ---------- нет аргумента ----------------
-    if (arg == 0) arg = processing_commands_with_no_arguments (&i, compile_info, start, command_code, length, pass);
+    if (arg == 0) arg = processing_commands_with_no_arguments (&i1, compile_info, start, command_code, length, pass);
 
     // ---------- если аргумент - регистр ----------
-    if (arg == 0) arg = processing_commands_with_registers    (&i, compile_info, start, command_name, line, pass);
+    if (arg == 0) arg = processing_commands_with_registers    (&i1, compile_info, start, command_name, line, pass);
 
     // ---------- если аргумент - число ----------
-    if (arg == 0) arg = processing_commands_with_numbers      (&i, compile_info, start, command_name, command_code, line, pass);
+    if (arg == 0) arg = processing_commands_with_numbers      (&i1, compile_info, start, command_name, command_code, line, pass);
 
     // ---------- если аргумент - метка ----------
-    if (arg == 0) arg = processing_commands_with_labels       (&i, compile_info, start, command_name, command_code, line, pass);
+    if (arg == 0) arg = processing_commands_with_labels       (&i1, compile_info, start, command_name, command_code, line, pass);
 
     // ------------- что-либо другое -------------
     if (arg == 0) {
@@ -419,6 +419,7 @@ int processing_commands_with_no_arguments (size_t* i, info_for_compile* compile_
                                            int command_code, size_t length, int pass) {
     assert (i != NULL);
     assert (compile_info != NULL);
+    assert (start !=  NULL);
 
     if ((*i) >= length || start[*i] == '\0') {
         if (pass == 2) {
@@ -437,6 +438,7 @@ int processing_commands_with_registers (size_t* i, info_for_compile* compile_inf
                                         const char* command_name, size_t line, int pass) {
     assert (i != NULL);
     assert (compile_info != NULL);
+    assert (start != NULL);
 
     size_t length = compile_info->index[line].length;
 
@@ -497,6 +499,7 @@ int processing_commands_with_numbers (size_t* i, info_for_compile* compile_info,
                                       const char* command_name, int command_code, size_t line, int pass) {
     assert (i != NULL);
     assert (compile_info != NULL);
+    assert (start != NULL);
 
     size_t length = compile_info->index[line].length;
 
@@ -509,42 +512,65 @@ int processing_commands_with_numbers (size_t* i, info_for_compile* compile_info,
 
         (*i)++; // пропускаем '['
 
-        // парсим число
-        char num_word[10] = {};
         int n = 0;
-        while ((*i) < length && isdigit((unsigned char)start[*i])) {
-            num_word[n++] = start[*i];
-            (*i)++;
-        }
-        num_word[n] = '\0';
+        // парсим число
+        if (isdigit((unsigned char)start[*i])) {
+            char num_word[10] = {};
+            while ((*i) < length && isdigit((unsigned char)start[*i])) {
+                num_word[n++] = start[*i];
+                (*i)++;
+            }
+            num_word[n] = '\0';
 
-        if (n == 0) {
-            printf ("Empty memory address in []\n");
-            return -1;
+            if (check_if_normal_operat_arg (&n, i, &length, start)) {
+                int address = atoi(num_word);
+
+                int actual_code = 0;
+                if (strcmp(command_name, "PUSH") == 0) actual_code = PUSHM; // 20
+                else if (strcmp(command_name, "POP") == 0) actual_code = POPM; // 21
+
+                if (pass == 2) {
+                    int32_t act_code = actual_code;
+                    int32_t add = address;
+                    emit (compile_info, act_code, true);
+                    emit (compile_info, add, false);
+                }
+            }
+            compile_info->instruction_pointer += 2;
         }
 
-        if (*i >= length || start[*i] != ']') {
-            printf ("Expected ']' after memory address\n");
-            return -1;
-        }
-            (*i)++; // пропускаем ']'
+        if (isalpha((unsigned char)start[*i])) {
+            char reg_word[10] = {};
 
-            int address = atoi(num_word);
+            while ((*i) < length && isalpha((unsigned char)start[*i])) {
+                reg_word[n++] = start[(*i)++];
+            }
+            reg_word[n] = '\0';
+
+            size_t num_of_regs = sizeof (array_of_registers) / sizeof (array_of_registers[0]);
+            int  reg_num   = -1;
+
+            for (size_t q = 0; q < num_of_regs; q++) {
+                if (strcmp(reg_word, array_of_registers[q].name_of_register) == 0) {
+                    reg_num   = array_of_registers[q].num_among_registers;
+                    break;
+                }
+            }
 
             int actual_code = 0;
-            if (strcmp(command_name, "PUSH") == 0) actual_code = PUSHM; // 20
-            else if (strcmp(command_name, "POP") == 0) actual_code = POPM; // 21
+            if (strcmp(command_name, "POP") == 0) actual_code = POPRM; // 24
 
             if (pass == 2) {
                 int32_t act_code = actual_code;
-                int32_t add = address;
+                int32_t n_reg = reg_num;
                 emit (compile_info, act_code, true);
-                emit (compile_info, add, false);
+                emit (compile_info, n_reg, false);
             }
-
             compile_info->instruction_pointer += 2;
-            return 1;
         }
+
+        return 1;
+    }
 
     // ------- обработка обычных push --------
     if (*i < length && isdigit((unsigned char)start[*i])) {
@@ -576,10 +602,31 @@ int processing_commands_with_numbers (size_t* i, info_for_compile* compile_info,
     return 0;
 }
 
+bool check_if_normal_operat_arg (int* n, size_t* i, size_t* length, const char* start) {
+    assert (n != NULL);
+    assert (i != NULL);
+    assert (length != NULL);
+    assert (start != NULL);
+
+    if (*n == 0) {
+        printf ("Empty memory address in []\n");
+        return false;
+    }
+
+    if (*i >= *length || start[*i] != ']') {
+        printf ("Expected ']' after memory address\n");
+        return false;
+    }
+
+    (*i)++;
+    return true;
+}
+
 int processing_commands_with_labels (size_t* i, info_for_compile* compile_info, const char* start,
                                     const char* command_name, int command_code, size_t line, int pass) {
     assert (i != NULL);
     assert (compile_info != NULL);
+    assert (start != NULL);
 
     size_t length = compile_info->index[line].length;
 
@@ -638,13 +685,15 @@ void skip_comments (string_info* str) {
 }
 
 int find_label_by_name (info_for_compile* compile_info, const char* name) {
+    assert (compile_info != NULL);
+
     for (int i = 0; i < compile_info->num_of_labels; i++) {
         if (strcmp (compile_info->labels[i].name, name) == 0) {
             return compile_info->labels[i].address;
         }
     }
 
-    return -1; //не найдена
+    return -1;
 }
 
 void set_label (info_for_compile* compile_info, const char* name, int address) {
@@ -660,6 +709,7 @@ void set_label (info_for_compile* compile_info, const char* name, int address) {
 void emit (info_for_compile* compile_info, int32_t value, bool cmd) {
     assert (compile_info != NULL);
     assert (compile_info->size_of_bytecode < compile_info->capacity_of_bytecode);
+
     compile_info->bytecode_buf[compile_info->size_of_bytecode] = value;
     compile_info->is_cmd[compile_info->size_of_bytecode] = cmd;
     compile_info->size_of_bytecode++;

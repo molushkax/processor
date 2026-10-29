@@ -18,17 +18,17 @@ POP DX              ; DX = n
 PUSH DX
 POP [2]             ; RAM[2] = n
 
-; ---------- if (n == 0): print 0 ----------
+; --------- if (n == 0): print 0 ---------
 PUSH 0
 PUSH DX
 JE :case_zero       ; JE compares 0 == n
 
-; ---------- if (n == 1): print 1 ----------
+; --------- if (n == 1): print 1 ---------
 PUSH 1
 PUSH DX
 JE :case_one        ; 1 == n ?
 
-; --------- if (n >= 2): initialize --------
+; -------- if (n >= 2): initialize -------
 PUSH 0
 POP AX              ; AX = 0   (a = F(0))
 PUSH 1

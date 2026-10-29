@@ -134,42 +134,42 @@ HLT
 ;  :no_roots
 ; ============================================================
 :no_roots
-PUSH 110            ; 'n'
-POP [10]
-PUSH 111            ; 'o'
-POP [11]
-PUSH 32             ; ' '
-POP [12]
-PUSH 114            ; 'r'
-POP [13]
-PUSH 111            ; 'o'
-POP [14]
-PUSH 111            ; 'o'
-POP [15]
-PUSH 116            ; 't'
-POP [16]
-PUSH 115            ; 's'
-POP [17]
-PUSH 0
-POP [18]
-PRINT
-HLT
+    PUSH 110            ; 'n'
+    POP [10]
+    PUSH 111            ; 'o'
+    POP [11]
+    PUSH 32             ; ' '
+    POP [12]
+    PUSH 114            ; 'r'
+    POP [13]
+    PUSH 111            ; 'o'
+    POP [14]
+    PUSH 111            ; 'o'
+    POP [15]
+    PUSH 116            ; 't'
+    POP [16]
+    PUSH 115            ; 's'
+    POP [17]
+    PUSH 0
+    POP [18]
+    PRINT
+    HLT
 
 ; ============================================================
 ;  :one_root_quad
 ; ============================================================
 :one_root_quad
-PUSH 2
-PUSH AX
-MUL
-POP [1]             ; RAM[1] = 2a
+    PUSH 2
+    PUSH AX
+    MUL
+    POP [1]             ; RAM[1] = 2a
 
-PUSH 0
-PUSH BX
-SUB
-PUSH [1]
-DIV
-POP [2]             ; RAM[2] = x
+    PUSH 0
+    PUSH BX
+    SUB
+    PUSH [1]
+    DIV
+    POP [2]             ; RAM[2] = x
 
 ; --- output "x = " ---
 PUSH 120            ; 'x'

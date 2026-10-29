@@ -5,11 +5,7 @@
 #include "hash.h"
 
 //TODO ошибки
-//TODO size > 2 не ассерт а помягче для пользователя
-//TODO header struct работу с ней b
-//TODO ядом регистры
 //TODO графика
-//TODO double в распечатке
 
 int main () {
     processor_t processor = {};
@@ -21,7 +17,7 @@ int main () {
         return 1;
     }
 
-    processor.buffer_with_commands = (int*)calloc (processor.number_of_int_for_buf, sizeof(int)); //TODO с проверкой
+    processor.buffer_with_commands = (int*)calloc (processor.number_of_int_for_buf, sizeof(int));
 
     create_buffer_with_commands (&processor, code_lst);
 
@@ -115,6 +111,7 @@ int count_ints_in_file (const char* code_lst) {
 
 void create_buffer_with_commands (processor_t* processor, const char* code_lst) {
     assert (processor != NULL);
+    assert (code_lst != NULL);
 
     FILE* f = fopen (code_lst, "rb");
     if (f == NULL) {
@@ -144,12 +141,12 @@ stack_elem_t do_commands_from_buffer (processor_t* processor) {
 
     memset (processor->ram, 0, sizeof (processor->ram));
     while (processor->instruction_pointer < processor->number_of_int_for_buf) {
-        int c = getchar ();
+        /*int c = getchar ();
 
         dump_registers_and_ram (processor);
         printf ("\nInstruction pointer: %d\n", processor->instruction_pointer);
         dump_buffer_with_commands (processor);
-        printf ("\ncommand number %d:\n\n", (processor->buffer_with_commands)[processor->instruction_pointer]);
+        printf ("\ncommand number %d:\n\n", (processor->buffer_with_commands)[processor->instruction_pointer]);*/
 
         switch ((processor->buffer_with_commands)[processor->instruction_pointer]) {
             case PUSH:  push_command  (processor); break;
@@ -172,6 +169,7 @@ stack_elem_t do_commands_from_buffer (processor_t* processor) {
             case SQRT:  sqrt_command  (processor); break;
             case PUSHM: pushm_command (processor); break;
             case POPM:  popm_command  (processor); break;
+            case POPRM: poprm_command (processor); break;
             case DRAW:  draw_command  (processor); break;
             case PRINT: print_command (processor); break;
             case OUT:   out_command   (processor); break;
@@ -179,7 +177,7 @@ stack_elem_t do_commands_from_buffer (processor_t* processor) {
             default:    fprintf (stderr, "Unknown command\n"); return -1;
         }
 
-        dump_stack (processor, __FUNCTION__, __LINE__);
+        //dump_stack (processor, __FUNCTION__, __LINE__);
     }
 
     return 0;
@@ -527,29 +525,30 @@ void dump_buffer_with_commands (processor_t* processor) {
 
     printf ("\nbuffer_with commands: (" GREEN_BACKGROUND "green" NO_COLOR " command is doing now) \n\n");
 
-    for (int start = 0; start < processor->number_of_int_for_buf; start += cells_per_line) {
-        int end = start + cells_per_line;
-        if (end > processor->number_of_int_for_buf) {
-            end = processor->number_of_int_for_buf;
-        }
-
-        printf ("   cell:   ");
-        for (int i = start; i < end; i++) {
-            if (i == processor->instruction_pointer) {
-                printf (GREEN_BACKGROUND "%4d" NO_COLOR, i);
-            }
-
-            else printf ("%4d", i);
-        }
-
-        printf ("\n");
-
-        printf ("   value:  ");
-        for (int i = start; i < end; i++) {
-            printf ("%4d", (processor->buffer_with_commands)[i]);
-        }
-        printf ("\n\n");
+    int start = 7;
+    int end = start - 7 + cells_per_line;
+    if (end > processor->number_of_int_for_buf) {
+        end = processor->number_of_int_for_buf;
     }
+
+    printf ("   cell:   ");
+    for (int i = start; i < end; i++) {
+        if (i == processor->instruction_pointer) {
+            printf (GREEN_BACKGROUND "%4d" NO_COLOR, i);
+        }
+
+        else if (abs(i - processor->instruction_pointer) < 6) printf ("%4d", i);
+    }
+
+    printf ("\n");
+
+    printf ("   value:  ");
+    for (int i = start; i < end; i++) {
+        if (abs(i - processor->instruction_pointer) < 6) printf ("%4d", (processor->buffer_with_commands)[i]);
+    }
+    printf ("\n");
+
+
 }
 
 void dump_registers_and_ram (processor_t* processor) {
@@ -602,6 +601,27 @@ void popm_command (processor_t* processor) {
     processor->instruction_pointer += 2;
 }
 
+void poprm_command (processor_t* processor) {
+    assert (processor != NULL);
+
+    int reg_num = (processor->buffer_with_commands)[processor->instruction_pointer + 1];
+
+    if (reg_num < 1 || reg_num > QUANTITY_OF_REGS) {
+        fprintf (stderr, "POP: invalid register number %d\n", reg_num);
+        processor->instruction_pointer += 2;
+        return;
+    }
+
+    PUSH_AND_CHECK (&(processor->stk), (processor->reg_values)[reg_num - 1]);
+
+    int address = (int)pop_value (processor);
+    stack_elem_t value   = pop_value (processor);
+
+    processor->ram[address] = int(value);
+
+    processor->instruction_pointer += 2;
+}
+
 void draw_command (processor_t* processor) {
     assert (processor != NULL);
 
@@ -611,10 +631,10 @@ void draw_command (processor_t* processor) {
         double symbol = processor->ram[i];
 
         if (equal_double (symbol, 0)) {
-            printf ("   ");
+            printf ("  ");
         }
 
-        else printf (GREEN_BACKGROUND " * " NO_COLOR);
+        else printf (GREEN_BACKGROUND "  " NO_COLOR);
 
         if ((i + 1) % SIZE_OF_SIDE == 0) {
             printf ("\n");
