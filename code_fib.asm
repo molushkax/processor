@@ -21,14 +21,14 @@ POP [2]             ; RAM[2] = n
 ; ---------- if (n == 0): print 0 ----------
 PUSH 0
 PUSH DX
-JE :case_zero       ; JE pops both and compares 0 == n
+JE :case_zero       ; JE compares 0 == n
 
 ; ---------- if (n == 1): print 1 ----------
 PUSH 1
 PUSH DX
 JE :case_one        ; 1 == n ?
 
-; -------- if (n >= 2): initialize --------
+; --------- if (n >= 2): initialize --------
 PUSH 0
 POP AX              ; AX = 0   (a = F(0))
 PUSH 1
@@ -44,7 +44,7 @@ POP CX              ; CX = 1   (k = 1)
     JMP :print_b       ; else (k >= n) -> print b
 
 :body
-    ; c = a + b  -> DX
+    ; c = a + b -> DX
     PUSH AX            ; stack: [a]
     PUSH BX            ; stack: [a, b]
     ADD                ; stack: [a + b]
@@ -61,7 +61,7 @@ POP CX              ; CX = 1   (k = 1)
     ; k = k + 1
     PUSH 1
     PUSH CX
-    ADD                 ; stack: [k+1]
+    ADD                 ; stack: [k + 1]
     POP CX              ; CX = k + 1
 
     JMP :loop
@@ -69,18 +69,15 @@ POP CX              ; CX = 1   (k = 1)
 ; ---------- output F(n) ----------
 :print_b
     PUSH BX
-    OUT                 ; OUT prints top of stack but does NOT pop
-    POP AX              ; clean the stack after OUT
+    OUT
     HLT
 
 :case_zero
     PUSH 0
     OUT
-    POP AX              ; clean the stack after OUT
     HLT
 
 :case_one
     PUSH 1
     OUT
-    POP AX              ; clean the stack after OUT
     HLT

@@ -166,7 +166,7 @@ void stack_copy (stack_t* stk_copy, stack_t* stk) {
 }
 
 int stack_verify_func (const stack_t* stk, const char* func, int line) {
-    STACK_DUMP (stk);
+    //STACK_DUMP (stk);
     int n = 0;
 
     if (stk == NULL) {

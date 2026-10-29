@@ -1,5 +1,8 @@
+#include "bytecode.h"
 #include "comp_ass.h"
 #include "commands.h"
+#include "stack.h"
+#include "hash.h"
 
 int main () {
     const char* code_asm = "code.asm";
@@ -17,7 +20,11 @@ int main () {
         printf ("string %zu: %s\n", i+1, (compile_info.index)[i].start_ptr);
     }
 
-    read_words (&compile_info);
+    bytecode_header my_bytecode_header = {};
+
+    read_words (&my_bytecode_header, &compile_info);
+
+    write_listing (&compile_info, "listing.lst");
 
     free (compile_info.buffer);
     free (compile_info.bytecode_buf);
@@ -201,13 +208,16 @@ int free_text_and_index (string_info* index, char* buffer, size_t bytes_for_code
     return 0;
 }
 
-int read_words (info_for_compile* compile_info) {
+int read_words (bytecode_header* my_bytecode_header, info_for_compile* compile_info) {
     assert (compile_info != NULL);
     assert (compile_info->index != NULL);
 
+    const int HEADER_WORDS = SIZE_OF_SIGNATURE + 4;
+
+    compile_info->instruction_pointer = HEADER_WORDS;
+    compile_info->size_of_bytecode    = HEADER_WORDS;
+
     // ---------- первый проход: только метки ----------
-    compile_info->instruction_pointer = 0;
-    compile_info->size_of_bytecode = 0;
     compile_info->capacity_of_bytecode = MAX_NUMBER_OF_COMMANDS;
     for (size_t line = 0; line < compile_info->number_of_strings; line++) {
         process_line (compile_info, line, /*pass=*/1);
@@ -215,18 +225,22 @@ int read_words (info_for_compile* compile_info) {
 
     // ---------- второй проход: генерация кода ----------
 
-    compile_info->instruction_pointer = 0;
+    compile_info->instruction_pointer = HEADER_WORDS;
     for (size_t line = 0; line < compile_info->number_of_strings; line++) {
         int result = process_line (compile_info, line, /*pass=*/2);
         if (result < 0) return -1;
     }
+
+    fill_header (compile_info, my_bytecode_header);
+    // -------------- инфа из header'а --------------
+    fill_with_header_info (my_bytecode_header, compile_info);
 
     FILE* out = fopen("code.bin", "wb");
     if (!out) {
         perror("code.bin");
         return -1;
     }
-
+    // ------------- запись остального --------------
     size_t written = fwrite(compile_info->bytecode_buf,
                             sizeof(int32_t),
                             compile_info->size_of_bytecode,
@@ -237,8 +251,6 @@ int read_words (info_for_compile* compile_info) {
         fprintf(stderr, "short write to code.bin\n");
         return -1;
     }
-
-    write_listing (compile_info, "listing.lst");
 
     return compile_info->instruction_pointer;
 }
@@ -671,10 +683,23 @@ void write_listing (const info_for_compile* compile_info, const char* path) {
         return;
     }
 
+    const int HEADER_WORDS = SIZE_OF_SIGNATURE + 4; // = 7
+    const int32_t* buf = compile_info->bytecode_buf;
+
+    // ---------- блок заголовка ----------
+    fprintf (fp, "=== BYTECODE HEADER ===\n");
+    fprintf (fp, "signature : %c%c%c\n",
+             (char)buf[0], (char)buf[1], (char)buf[2]);
+    fprintf (fp, "version   : %u.%u\n",
+             (unsigned)buf[3], (unsigned)buf[4]);
+    fprintf (fp, "code_size : %u words\n", (unsigned)buf[5]);
+    fprintf (fp, "code_hash : 0x%08X\n",  (unsigned)buf[6]);
+    fprintf (fp, "\n");
+
     fprintf (fp, "   off   |  bytecode            |  mnemonic  |  arg\n");
     fprintf (fp, " --------+----------------------+------------+--------\n");
 
-    for (size_t w = 0; w < compile_info->size_of_bytecode; w++) {
+    for (size_t w = HEADER_WORDS; w < compile_info->size_of_bytecode; w++) {
         int32_t word = compile_info->bytecode_buf[w];
         unsigned char* b = (unsigned char*)&word;
 
@@ -702,4 +727,40 @@ void write_listing (const info_for_compile* compile_info, const char* path) {
     }
 
     fclose (fp);
+}
+
+void fill_header (info_for_compile* compile_info, bytecode_header* my_bytecode_header) {
+    assert (compile_info != NULL);
+    assert (my_bytecode_header != NULL);
+
+    const size_t HEADER_WORDS = SIZE_OF_SIGNATURE + 4;
+
+    size_t body_words = compile_info->size_of_bytecode - HEADER_WORDS;
+
+    uint32_t hash = dgb2_hash_bytecode (compile_info->bytecode_buf + HEADER_WORDS, body_words);
+    printf ("hash: %u\n", hash);
+
+    my_bytecode_header->code_hash = hash;
+    my_bytecode_header->code_size = (uint32_t)body_words;
+
+    for (int i = 0; i < SIZE_OF_SIGNATURE; i++) {
+        (my_bytecode_header->signature)[i] = BYTECODE_SIGNATURE[i];
+    }
+    my_bytecode_header->major_version = 1;
+    my_bytecode_header->minor_version = 0;
+}
+
+void fill_with_header_info (bytecode_header* my_bytecode_header, info_for_compile* compile_info) {
+    assert (my_bytecode_header != NULL);
+    assert (compile_info       != NULL);
+
+    size_t position = 0;
+    for (int i = 0; i < SIZE_OF_SIGNATURE; i++) {
+        compile_info->bytecode_buf[position++] = (uint32_t)my_bytecode_header->signature[i];
+    }
+
+    compile_info->bytecode_buf[3] = my_bytecode_header->major_version;
+    compile_info->bytecode_buf[4] = my_bytecode_header->minor_version;
+    compile_info->bytecode_buf[5] = my_bytecode_header->code_size;
+    compile_info->bytecode_buf[6] = my_bytecode_header->code_hash;
 }

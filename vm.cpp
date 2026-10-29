@@ -1,16 +1,15 @@
 #include "stack.h"
 #include "commands.h"
 #include "vm.h"
+#include "bytecode.h"
+#include "hash.h"
 
 //TODO ошибки
 //TODO size > 2 не ассерт а помягче для пользователя
-//TODO bytecode
 //TODO header struct работу с ней b
 //TODO ядом регистры
 //TODO графика
-//TODO оперативка и на чем
-//TODO круг
-//TODO листинг
+//TODO double в распечатке
 
 int main () {
     processor_t processor = {};
@@ -26,11 +25,78 @@ int main () {
 
     create_buffer_with_commands (&processor, code_lst);
 
+    // ---------- проверка header'a ----------
+    if (check_header (processor.buffer_with_commands,
+                      (size_t)processor.number_of_int_for_buf) != 0) {
+        fprintf (stderr, "Refusing to execute invalid bytecode.\n");
+        free (processor.buffer_with_commands);
+        return 2;
+    }
+
     do_commands_from_buffer (&processor);
 
     free (processor.buffer_with_commands);
     stack_destroy (&(processor.stk));
     stack_destroy (&(processor.call_stk));
+
+    return 0;
+}
+
+int check_header (const int32_t* buf, size_t total_words) {
+    assert (buf != NULL);
+
+    const size_t HEADER_WORDS = SIZE_OF_SIGNATURE + 4; // = 7
+
+    if (total_words < HEADER_WORDS) {
+        fprintf (stderr, "ERROR: file too small for bytecode header\n");
+        return -1;
+    }
+
+    // ---------- сигнатура: все 3 слова ----------
+    for (int i = 0; i < SIZE_OF_SIGNATURE; i++) {
+        if ((uint32_t)buf[i] != BYTECODE_SIGNATURE[i]) {
+            fprintf (stderr,
+                     "ERROR: bad signature[%d]: expected '%c' (0x%X), got 0x%X\n",
+                     i, (char)BYTECODE_SIGNATURE[i],
+                     BYTECODE_SIGNATURE[i], (uint32_t)buf[i]);
+            fprintf (stderr, "This is not a MOLE bytecode file.\n");
+            return -1;
+        }
+    }
+
+    // ---------- версия ----------
+    uint32_t major = (uint32_t)buf[3];
+    uint32_t minor = (uint32_t)buf[4];
+    if (major != MAJOR_VERSION || minor != MINOR_VERSION) {
+        fprintf (stderr,
+                 "ERROR: unsupported bytecode version %u.%u (expected %u.%u)\n",
+                 major, minor, MAJOR_VERSION, MINOR_VERSION);
+        return -1;
+    }
+
+    // ---------- размер ----------
+    uint32_t code_size = (uint32_t)buf[5];
+    if ((size_t)code_size + HEADER_WORDS != total_words) {
+        fprintf (stderr,
+                 "ERROR: code_size mismatch: header says %u, file has %zu body words\n",
+                 code_size, total_words - HEADER_WORDS);
+        return -1;
+    }
+
+    // ---------- хэш ----------
+    uint32_t expected_hash = (uint32_t)buf[6];
+    uint32_t real_hash   = dgb2_hash_bytecode (buf + HEADER_WORDS, code_size);
+
+    if (expected_hash != real_hash) {
+        fprintf (stderr,
+                 "ERROR: bytecode hash mismatch: file 0x%08X, computed 0x%08X\n",
+                 expected_hash, real_hash);
+        fprintf (stderr, "File is corrupted or was modified.\n");
+        return -1;
+    }
+
+    printf ("Header OK: signature=MOL, version=%u.%u, code_size=%u, hash=0x%08X\n",
+            major, minor, code_size, real_hash);
 
     return 0;
 }
@@ -72,18 +138,18 @@ stack_elem_t do_commands_from_buffer (processor_t* processor) {
     (processor->call_stk).capacity = 5;
     stack_init (&(processor->call_stk));
 
-    processor->instruction_pointer = 0;
+    processor->instruction_pointer = SIZE_OF_SIGNATURE + 4;
 
-    //printf ("\nTap to do every command ;)\n");
+    printf ("\nTap to do every command ;)\n");
 
     memset (processor->ram, 0, sizeof (processor->ram));
     while (processor->instruction_pointer < processor->number_of_int_for_buf) {
-        //int c = getchar ();
+        int c = getchar ();
 
-        /*dump_registers_and_ram (processor);
+        dump_registers_and_ram (processor);
         printf ("\nInstruction pointer: %d\n", processor->instruction_pointer);
         dump_buffer_with_commands (processor);
-        printf ("\ncommand number %d:\n\n", (processor->buffer_with_commands)[processor->instruction_pointer]);*/
+        printf ("\ncommand number %d:\n\n", (processor->buffer_with_commands)[processor->instruction_pointer]);
 
         switch ((processor->buffer_with_commands)[processor->instruction_pointer]) {
             case PUSH:  push_command  (processor); break;
@@ -113,7 +179,7 @@ stack_elem_t do_commands_from_buffer (processor_t* processor) {
             default:    fprintf (stderr, "Unknown command\n"); return -1;
         }
 
-        //dump_stack (processor, __FUNCTION__, __LINE__);
+        dump_stack (processor, __FUNCTION__, __LINE__);
     }
 
     return 0;
@@ -457,7 +523,7 @@ void print_data_elements_vm (const stack_elem_t* data, size_t size) {
 void dump_buffer_with_commands (processor_t* processor) {
     assert (processor != NULL);
 
-    int cells_per_line = 15;
+    int cells_per_line = 50;
 
     printf ("\nbuffer_with commands: (" GREEN_BACKGROUND "green" NO_COLOR " command is doing now) \n\n");
 
@@ -539,18 +605,18 @@ void popm_command (processor_t* processor) {
 void draw_command (processor_t* processor) {
     assert (processor != NULL);
 
-    printf(YELLOW "\n--- Video Memory Output (draw) ---\n" NO_COLOR);
+    printf(GREEN "\n--- Video Memory Output (draw) ---\n" NO_COLOR);
 
     for (int i = 0; i < RAM_SIZE; i++) {
         double symbol = processor->ram[i];
 
         if (equal_double (symbol, 0)) {
-            printf (" + ");
+            printf ("   ");
         }
 
         else printf (GREEN_BACKGROUND " * " NO_COLOR);
 
-        if ((i + 1) % 10 == 0) {
+        if ((i + 1) % SIZE_OF_SIDE == 0) {
             printf ("\n");
         }
     }

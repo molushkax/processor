@@ -19,7 +19,7 @@
 
 #define MAX_NUMBERS_OF_LABELS  20
 #define MAX_LABEL_NAME_LEN     67
-#define MAX_NUMBER_OF_COMMANDS 500
+#define MAX_NUMBER_OF_COMMANDS 10000
 
 struct label_info {
     char name[MAX_LABEL_NAME_LEN];
@@ -87,7 +87,7 @@ int    check_of_memory_allocation_index   (string_info* index, const char* calle
 int    write_pointers_to_strings_in_index (info_for_compile* compile_info, const char* caller);
 int    free_text_and_index                (string_info* index, char* buffer, size_t bytes_for_onegin, size_t number_of_strings);
 
-int    read_words                         (info_for_compile* compile_info);
+int    read_words                         (bytecode_header* my_bytecode_header, info_for_compile* compile_info);
 int    process_line                       (info_for_compile* compile_info, size_t line, int pass);
 int    labels_processing                  (size_t* i, info_for_compile* compile_info, size_t line, const char* start, int pass);
 int    get_name_of_command                (size_t* i, int* j, info_for_compile* compile_info, size_t line, const char* start, char* word);
@@ -108,5 +108,8 @@ void   set_label          (info_for_compile* compile_info, const char* name, int
 void   emit               (info_for_compile* compile_info, int32_t value, bool cmd);
 const char* mnemonic_by_code (int code);
 void        write_listing    (const info_for_compile* compile_info, const char* path);
+
+void        fill_header            (info_for_compile* compile_info, bytecode_header* my_bytecode_header);
+void        fill_with_header_info  (bytecode_header* my_bytecode_header, info_for_compile* compile_info);
 
 #endif

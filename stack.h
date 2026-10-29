@@ -36,6 +36,7 @@ const int TWO_FOR_CANARIES = 2;
 const double ALMOST_ZERO_VALUE = 0.00000001;
 
 #define RED "\033[31m"
+#define GREEN    "\033[1;32m"
 #define GREEN_BACKGROUND "\033[42m"
 #define YELLOW_BACKGROUND "\033[43m"
 #define NO_COLOR "\033[0m"
